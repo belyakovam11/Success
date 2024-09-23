@@ -48,9 +48,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready --host=db; do
+            echo "Waiting for Postgres...";
+            sleep 3;
+          done
+
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://myuser:mypassword@localhost/mydb
+          DATABASE_URL: postgres://myuser:mypassword@db/mydb
         run: |
           python backend/manage.py migrate
 
