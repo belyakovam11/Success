@@ -4,18 +4,18 @@ on:
   push:
     branches:
       - main
-      - frontend
+      - fronted
       - backend
   pull_request:
     branches:
       - main
-      - frontend
+      - fronted
       - backend
 
 jobs:
-  test-backend:
+  test-backendend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
 
     services:
       db:
@@ -31,13 +31,15 @@ jobs:
           --health-retries=5
         ports:
           - 5432:5432
+        volumes:
+          - /var/lib/postgresql/data
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -46,21 +48,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
+      - name: Wait for DB
+        run: sleep 10  # Здесь добавляем задержку
+
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb
+          DATABASE_URL: postgres://myuser:mypassword@db/mydb  # Убедитесь, что адрес указан правильно
         run: |
           python backend/manage.py migrate
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb
+          DATABASE_URL: postgres://myuser:mypassword@db/mydb  # Убедитесь, что адрес указан правильно
         run: |
           python backend/manage.py test
 
-  test-frontend:
+  test-frontedend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
 
     steps:
       - name: Checkout code
@@ -69,14 +74,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Обновите до Node.js версии 20
+          node-version: '16'
 
       - name: Install dependencies
         run: |
           npm install
-        working-directory: ./frontend
 
-      - name: Run frontend tests
+      - name: Run frontedend tests
         run: |
           npm run test
-        working-directory: ./frontend
