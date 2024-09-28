@@ -76,6 +76,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Change to frontend directory
+        run: cd fronted
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -83,16 +86,20 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd fronted  # Navigate to frontend directory
           npm install
 
       - name: Run frontend tests
         run: |
+          cd fronted  # Navigate to frontend directory
           npm run test
 
       - name: Lint frontend code
         run: |
+          cd fronted  # Navigate to frontend directory
           npm run lint
 
       - name: Build frontend
         run: |
+          cd fronted  # Navigate to frontend directory
           npm run build
