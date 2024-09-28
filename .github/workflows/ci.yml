@@ -13,9 +13,9 @@ on:
       - backend
 
 jobs:
-  test-backendend:
+  test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
+    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'
 
     services:
       db:
@@ -26,7 +26,7 @@ jobs:
           POSTGRES_PASSWORD: mypassword
         options: >-
           --health-cmd="pg_isready"
-          --health-interval=10s
+          --health-interval=5s
           --health-timeout=5s
           --health-retries=5
         ports:
@@ -49,23 +49,28 @@ jobs:
           pip install -r backend/requirements.txt
 
       - name: Wait for DB
-        run: sleep 10  # Здесь добавляем задержку
+        run: sleep 5  # Reduced delay
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb  # Убедитесь, что адрес указан правильно
+          DATABASE_URL: postgres://myuser:mypassword@db/mydb
         run: |
           python backend/manage.py migrate
 
-      - name: Run tests
+      - name: Run backend tests
         env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb  # Убедитесь, что адрес указан правильно
+          DATABASE_URL: postgres://myuser:mypassword@db/mydb
         run: |
           python backend/manage.py test
 
-  test-frontedend:
+      - name: Check Dockerfile
+        run: |
+          docker build -t my-backend-image ./backend
+          docker run my-backend-image python manage.py check
+
+  test-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
+    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -80,6 +85,14 @@ jobs:
         run: |
           npm install
 
-      - name: Run frontedend tests
+      - name: Run frontend tests
         run: |
           npm run test
+
+      - name: Lint frontend code
+        run: |
+          npm run lint
+
+      - name: Build frontend
+        run: |
+          npm run build
