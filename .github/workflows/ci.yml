@@ -81,6 +81,9 @@ jobs:
         with:
           node-version: '16'
 
+      - name: List directory contents for debugging
+        run: ls -R
+
       - name: Install dependencies
         run: |
           cd fronted || exit 1  # Перейти в директорию frontend, выйти, если не найдена
