@@ -86,20 +86,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm install
 
       - name: Run frontend tests
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run test
 
       - name: Lint frontend code
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run lint
 
       - name: Build frontend
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run build
