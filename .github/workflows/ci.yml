@@ -15,7 +15,8 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'
+
 
     services:
       db:
