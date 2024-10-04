@@ -86,27 +86,23 @@ jobs:
 
       - name: Check for package.json
         run: |
-          if [ ! -f frontend/package.json ]; then
-            echo "package.json not found in frontend"
+          if [ ! -f package.json ]; then
+            echo "package.json not found"
             exit 1
           fi
 
       - name: Install dependencies
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm install
 
       - name: Run frontend tests
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run test
 
       - name: Lint frontend code
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run lint
 
       - name: Build frontend
         run: |
-          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run build
