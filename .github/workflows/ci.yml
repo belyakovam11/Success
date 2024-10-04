@@ -15,8 +15,7 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'
-
+    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'
 
     services:
       db:
@@ -77,11 +76,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List directory contents (Root)
-        run: ls -la  # Вывод содержимого текущей директории
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-      - name: List directory contents (Recursive)
-        run: ls -R  # Вывод всех подкаталогов и файлов
+      - name: List directory contents for debugging
+        run: ls -R
+
+      - name: Check for package.json
+        run: |
+          if [ ! -f frontend/package.json ]; then
+            echo "package.json not found in frontend"
+            exit 1
+          fi
 
       - name: Install dependencies
         run: |
