@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
   pull_request:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
 
 jobs:
@@ -70,7 +70,7 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -86,20 +86,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd fronted || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm install
 
       - name: Run frontend tests
         run: |
-          cd fronted || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run test
 
       - name: Lint frontend code
         run: |
-          cd fronted || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run lint
 
       - name: Build frontend
         run: |
-          cd fronted || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run build
