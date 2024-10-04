@@ -81,25 +81,30 @@ jobs:
         with:
           node-version: '16'
 
-      - name: List directory contents for debugging
-        run: ls -R
+      - name: List directory contents (Root)
+        run: |
+          ls -la  # Выводим содержимое корневой директории для отладки
+
+      - name: List directory contents (Recursive)
+        run: |
+          ls -R  # Выводим рекурсивно все содержимое для поиска frontend
 
       - name: Install dependencies
         run: |
-          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm install
 
       - name: Run frontend tests
         run: |
-          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run test
 
       - name: Lint frontend code
         run: |
-          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run lint
 
       - name: Build frontend
         run: |
-          cd main || exit 1  # Перейти в директорию frontend, выйти, если не найдена
+          cd frontend || exit 1  # Перейти в директорию frontend, выйти, если не найдена
           npm run build
