@@ -10,8 +10,9 @@ class SimpleTest(TestCase):
         a = 5
         self.assertEqual(a, 5)  # Это приведет к ошибке, т.к. a не равно 2
 
-@shared_task
-def add(x, y):
-    return x + y
-celery_worker.reload()
-assert mul.delay(4,4).get(timeout==10)==16
+    def test3(self, celery_app, celery_worker):
+            @celery_app.task
+            def mul(x, y):
+                return x * y
+            celery_worker.reload()
+            self.assertEqual(mul.delay(4, 4).get(timeout=10), 16)
