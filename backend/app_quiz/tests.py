@@ -13,3 +13,5 @@ class SimpleTest(TestCase):
 @shared_task
 def add(x, y):
     return x + y
+celery_worker.reload()
+assert mul.delay(4,4).get(timeout==10)==16
