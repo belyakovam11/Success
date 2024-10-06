@@ -3,7 +3,7 @@ name: Node.js and Python CI
 on:
   push:
     branches:
-      - frontend
+      - fronted  # Update this to match your folder name
       - main
 
 jobs:
@@ -22,22 +22,22 @@ jobs:
 
     - name: Install dependencies for frontend
       run: npm install
-      working-directory: frontend
+      working-directory: fronted  # Update this to match your folder name
 
     - name: Check for package.json in frontend
       run: |
-        if [ ! -f frontend/package.json ]; then
-          echo "package.json not found in frontend"
+        if [ ! -f fronted/package.json ]; then  # Update this to match your folder name
+          echo "package.json not found in fronted"
           exit 1
         fi
 
     - name: Run lint for frontend
       run: npm run lint
-      working-directory: frontend
+      working-directory: fronted  # Update this to match your folder name
 
     - name: Run tests for frontend
       run: npm test
-      working-directory: frontend
+      working-directory: fronted  # Update this to match your folder name
 
   backend-build:
 
