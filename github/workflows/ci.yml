@@ -1,32 +1,78 @@
-name: CI Pipeline
+name: Node.js and Python CI
 
 on:
   push:
     branches:
+      - fronted  # Update this to match your folder name
       - main
-      - fronted
-      - backend
-  pull_request:
-    branches:
-      - fronted
 
-  test-frontedend:
+jobs:
+  frontend-build:
+
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install dependencies
-        run: |
-          npm install
+    - name: Install dependencies for frontend
+      run: npm install
+      working-directory: fronted  # Update this to match your folder name
 
-      - name: Run frontedend tests
-        run: |
-          npm run test
+    - name: Check for package.json in frontend
+      run: |
+        if [ ! -f fronted/package.json ]; then  # Update this to match your folder name
+          echo "package.json not found in fronted"
+          exit 1
+        fi
+
+    - name: Run lint for frontend
+      run: npm run lint
+      working-directory: fronted  # Update this to match your folder name
+
+    - name: Run tests for frontend
+      run: npm test
+      working-directory: fronted  # Update this to match your folder name
+
+  backend-build:
+
+    runs-on: ubuntu-latest
+    needs: frontend-build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies for backend
+      run: |
+        python -m venv env
+        source env/bin/activate
+        pip install -r backend/requirements.txt
+
+    - name: Check for requirements.txt in backend
+      run: |
+        if [ ! -f backend/requirements.txt ]; then
+          echo "requirements.txt not found in backend"
+          exit 1
+        fi
+
+    - name: Run lint for backend
+      run: |
+        source env/bin/activate
+        pip install flake8
+        flake8 backend/
+
+    - name: Run tests for backend
+      run: |
+        source env/bin/activate
+        python -m unittest discover backend/tests
