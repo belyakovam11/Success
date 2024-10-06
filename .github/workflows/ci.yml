@@ -1,108 +1,39 @@
-name: CI Pipeline
+name: Node.js CI
 
 on:
   push:
     branches:
-      - main
       - frontend
-      - backend
-  pull_request:
-    branches:
-      - main
-      - frontend
-      - backend
 
 jobs:
-  test-backend:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'
+  build:
 
-    services:
-      db:
-        image: postgres:13
-        env:
-          POSTGRES_DB: mydb
-          POSTGRES_USER: myuser
-          POSTGRES_PASSWORD: mypassword
-        options: >-
-          --health-cmd="pg_isready"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-        ports:
-          - 5432:5432
-        volumes:
-          - /var/lib/postgresql/data
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+    - name: Install dependencies
+      run: npm install
+      working-directory: frontend
 
-      - name: Wait for DB
-        run: sleep 5
+    - name: Check for package.json
+      run: |
+        if [ ! -f frontend/package.json ]; then
+          echo "package.json not found"
+          exit 1
+        fi
 
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb
-        run: |
-          python backend/manage.py migrate
+    - name: Run lint
+      run: npm run lint
+      working-directory: frontend
 
-      - name: Run backend tests
-        env:
-          DATABASE_URL: postgres://myuser:mypassword@db/mydb
-        run: |
-          python backend/manage.py test
-
-      - name: Check Dockerfile
-        run: |
-          docker build -t my-backend-image ./backend
-          docker run my-backend-image python manage.py check
-
-  test-frontend:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: List directory contents for debugging
-        run: ls -R
-
-      - name: Check for package.json
-        run: |
-          if [ ! -f package.json ]; then
-            echo "package.json not found"
-            exit 1
-          fi
-
-      - name: Install dependencies
-        run: |
-          npm install
-
-      - name: Run frontend tests
-        run: |
-          npm run test
-
-      - name: Lint frontend code
-        run: |
-          npm run lint
-
-      - name: Build frontend
-        run: |
-          npm run build
+    - name: Run tests
+      run: npm test
+      working-directory: frontend
