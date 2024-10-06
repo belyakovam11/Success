@@ -15,4 +15,5 @@ class SimpleTest(TestCase):
             def mul(x, y):
                 return x * y
             celery_worker.reload()
-            self.assertEqual(mul.delay(4, 4).get(timeout=10), 200)
+            self.assertEqual(mul.delay(4, 4).get(timeout=10), 16)
+

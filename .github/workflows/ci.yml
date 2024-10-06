@@ -35,32 +35,36 @@ jobs:
           - /var/lib/postgresql/data
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgres://myuser:mypassword@localhost/mydb
-        run: |
-          python backend/manage.py migrate
+    - name: Install dependencies for frontend
+      run: npm install
+      working-directory: fronted  # Update this to match your folder name
 
-      - name: Run tests
-        env:
-          DATABASE_URL: postgres://myuser:mypassword@localhost/mydb
-        run: |
-          python backend/manage.py test
+    - name: Check for package.json in frontend
+      run: |
+        if [ ! -f fronted/package.json ]; then  # Update this to match your folder name
+          echo "package.json not found in fronted"
+          exit 1
+        fi
 
-  test-frontedend:
+    - name: Run lint for frontend
+      run: npm run lint
+      working-directory: fronted  # Update this to match your folder name
+
+    - name: Run tests for frontend
+      run: npm test
+      working-directory: fronted  # Update this to match your folder name
+
+  backend-build:
+
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
 
