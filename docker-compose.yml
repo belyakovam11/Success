@@ -77,6 +77,19 @@ services:
       - backend
       - frontend
 
+  minio:
+    container_name: minio
+    image: "minio/minio:latest"
+    volumes:
+      - ./Storage/minio/storage:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minio-image
+      - MINIO_ROOT_PASSWORD=minio-image-pass
+    command: minio server /data --console-address :9001
+
   swagger-ui:
     image: swaggerapi/swagger-ui
     ports:
@@ -94,3 +107,4 @@ services:
 volumes:
   postgres_data:
   mongo_data:
+  minio_data:
