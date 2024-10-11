@@ -1,0 +1,32 @@
+Запуск команд
+
+Питон 
+Запускаем виртуальное окружении (внимательно на директорию, при написании ls в терминале должны быть папки фронт бек компоуз)
+.\env\Scripts\activate
+
+Сервисы для работы
+
+Pgadmin http://localhost:5050
+login=admin@admin.com
+PASSWORD=admin
+
+Rabbit http://localhost:15672
+login=guest
+PASSWORD=guest
+
+Swagger http://localhost:8081/
+
+MiniO http://localhost:9001
+login=minio-image
+ASSWORD=minio-image-pass
+
+MONGO http://localhost:27017/
+
+Redis http://localhost:6379/
+
+Backend(Django) http://localhost:5000/
+
+Frontend(React) http://localhost:3000/
+
+Nginx http://localhost/
+
