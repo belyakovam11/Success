@@ -3,7 +3,7 @@ project: my-project
 
 repositories:
 
-    flask:
+    django:
 
         url: https://github.com/belyakovam11/Success.git
         branch: main
