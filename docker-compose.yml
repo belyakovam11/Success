@@ -122,6 +122,10 @@ services:
     extra_hosts:
       - "my_custom_host:62.113.103.241"
 
+networks:
+  default:
+    driver: bridge
+
 volumes:
   postgres_data:
   mongo_data:
