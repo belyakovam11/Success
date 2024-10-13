@@ -2,15 +2,15 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
     environment:
       - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
     depends_on:
       - db
       - rabbitmq
@@ -18,15 +18,15 @@ services:
       - mongo
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/usr/src/app
     environment:
       - NODE_ENV=development
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
     depends_on:
       - backend
 
@@ -38,6 +38,8 @@ services:
       - POSTGRES_DB=your_db_name
       - POSTGRES_USER=your_db_user
       - POSTGRES_PASSWORD=your_db_password
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -48,17 +50,23 @@ services:
       - "5050:80"
     depends_on:
       - db
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   mongo:
     image: mongo:latest
@@ -66,6 +74,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   nginx:
     image: nginx:alpine
@@ -76,6 +86,8 @@ services:
     depends_on:
       - backend
       - frontend
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   minio:
     container_name: minio
@@ -89,6 +101,8 @@ services:
       - MINIO_ROOT_USER=minio-image
       - MINIO_ROOT_PASSWORD=minio-image-pass
     command: minio server /data --console-address :9001
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   swagger-ui:
     image: swaggerapi/swagger-ui
@@ -98,11 +112,15 @@ services:
       - SWAGGER_JSON=/app/swagger.json
     volumes:
       - ./backend:/app
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
   swagger-editor:
     image: swaggerapi/swagger-editor
     ports:
       - "8081:8080"
+    extra_hosts:
+      - "my_custom_host:62.113.103.241"
 
 volumes:
   postgres_data:
