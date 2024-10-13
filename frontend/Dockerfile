@@ -1,21 +1,25 @@
 # Используем актуальный базовый образ Node.js
 FROM node:18-alpine
-# set working directory
+
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
+# Добавляем `/app/node_modules/.bin` в $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# install app dependencies
+# Копируем файл зависимостей и устанавливаем зависимости
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
-RUN npm install react-scripts@5.0.1 -g --silent
 
-# add app
-COPY . ./
+# Копируем остальные файлы приложения в рабочую директорию контейнера
+COPY . .
 
-# start app
+# Устанавливаем переменные окружения для уменьшения использования памяти
+ENV NODE_OPTIONS="--max_old_space_size=512"
+
+# Указываем команду для старта приложения
 CMD ["npm", "start"]
+
 # Открываем порт 3000 для работы приложения
 EXPOSE 3000
