@@ -9,6 +9,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
+# Устанавливаем react-scripts с увеличением лимита памяти
+RUN NODE_OPTIONS="--max_old_space_size=1024"
 RUN npm install --silent
 RUN npm install react-scripts@5.0.1 -g --silent
 
