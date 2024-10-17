@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8' # Устарело, но можно оставить для ясности
 
 services:
   backend:
@@ -16,6 +16,8 @@ services:
       - rabbitmq
       - redis
       - mongo
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -29,23 +31,40 @@ services:
       - NODE_ENV=development
     depends_on:
       - backend
+    networks:
+      - app-network
 
   db:
     image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=your_db_name
-      - POSTGRES_USER=your_db_user
-      - POSTGRES_PASSWORD=your_db_password
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "django" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   pgadmin:
     image: dpage/pgadmin4
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin:/root/.pgadmin
     ports:
       - "5050:80"
+    networks:
+      - app-network
     depends_on:
       - db
 
@@ -54,11 +73,15 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - app-network
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - app-network
 
   mongo:
     image: mongo:latest
@@ -66,6 +89,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - app-network
 
   nginx:
     image: nginx:alpine
@@ -77,6 +102,8 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      - app-network
 
   minio:
     container_name: minio
@@ -90,6 +117,8 @@ services:
       - MINIO_ROOT_USER=minio-image
       - MINIO_ROOT_PASSWORD=minio-image-pass
     command: minio server /data --console-address :9001
+    networks:
+      - app-network
 
   swagger-ui:
     image: swaggerapi/swagger-ui
@@ -99,20 +128,22 @@ services:
       - SWAGGER_JSON=/app/swagger.json
     volumes:
       - ./backend:/app
+    networks:
+      - app-network
 
   swagger-editor:
     image: swaggerapi/swagger-editor
     ports:
       - "8081:8080"
+    networks:
+      - app-network
 
 networks:
-  default:
-    name: nginx
-    external: true
+  app-network:
+    driver: app-network
 
 volumes:
-  postgres_data:
+  postgres_data: # Исправленное имя тома для Postgres
   mongo_data:
   minio_data:
-
-
+  pgadmin:
