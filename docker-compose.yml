@@ -140,10 +140,10 @@ services:
 
 networks:
   app-network:
-    driver: app-network
+
 
 volumes:
-  postgres_data: # Исправленное имя тома для Postgres
+  postgres_data:
   mongo_data:
   minio_data:
   pgadmin:
