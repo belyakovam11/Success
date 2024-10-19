@@ -1,9 +1,10 @@
 # Базовый образ Python 3.9
 FROM python:3.9-slim
 
-# Установка зависимостей для системы
+# Установка зависимостей для системы, включая ping
 RUN apt-get update && apt-get install -y \
-    libpq-dev gcc python3-dev musl-dev
+    libpq-dev gcc python3-dev musl-dev postgresql-client iputils-ping && \
+    apt-get clean
 
 # Установка рабочей директории внутри контейнера
 WORKDIR /app
@@ -28,4 +29,3 @@ ENV PYTHONUNBUFFERED=1
 
 # Запуск Django сервера
 CMD ["python", "manage.py", "runserver", "0.0.0.0:5000"]
-
