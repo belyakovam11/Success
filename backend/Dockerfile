@@ -27,5 +27,5 @@ EXPOSE 5000
 # Установка переменной среды для установки адреса хоста
 ENV PYTHONUNBUFFERED=1
 
-# Запуск Django сервера
-CMD ["python", "manage.py", "runserver", "0.0.0.0:5000"]
+# Запуск миграций и сервера Django
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:5000"]
