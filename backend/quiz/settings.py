@@ -36,9 +36,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'quiz',
+    'app_quiz',
+    'corsheaders',
 ]
 
+
+# quiz/settings.py
+
+AUTH_USER_MODEL = 'app_quiz.CustomUser'
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Добавляем CORS middleware
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'quiz.urls'
 
@@ -132,3 +142,10 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Разрешите ваш frontend, если он работает на этом порту
+    "http://127.0.0.1:3000",
+    # Добавьте другие разрешенные источники при необходимости
+]
