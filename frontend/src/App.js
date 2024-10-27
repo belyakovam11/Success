@@ -1,16 +1,20 @@
-import React, { useState } from "react";
-import "./App.css";
-import Auth from "./Auth"; // Импортируйте ваш компонент auth.js
+// App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Auth from './Auth';
+import MainPage from './MainPage';
+import RoomPage from './RoomPage';
+import './Auth.css';
 
 function App() {
-  const [isLogin, setIsLogin] = useState(true);
-
   return (
-    <div className="App">
-      <div className="auth-container">
-        <Auth isLogin={isLogin} />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Auth />} />
+        <Route path="/main" element={<MainPage />} />
+        <Route path="/room" element={<RoomPage />} />
+      </Routes>
+    </Router>
   );
 }
 

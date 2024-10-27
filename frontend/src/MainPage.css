@@ -1,0 +1,73 @@
+/* MainPage.css */
+.main-page {
+    padding: 20px;
+}
+
+.player-card {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.room-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.room-card {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.room-card:hover {
+    background-color: #d0d0d0;
+}
+
+.create-room-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #5d54a4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-room-button:hover {
+    background-color: #4a4484;
+}
+
+/* Стили для модального окна */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.2);
+    width: 400px;
+}

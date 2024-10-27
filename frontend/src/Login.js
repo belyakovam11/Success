@@ -1,11 +1,15 @@
+// Login.js
 import React, { useState } from 'react';
-import './Register.css'; // Используем те же стили
+import { useNavigate } from 'react-router-dom';
+import './Register.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // используем хук для навигации
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,16 +19,35 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login data:', formData);
+    try {
+      const response = await fetch('http://127.0.0.1:5000/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage(data.message || 'Успешный вход!');
+        navigate('/main'); // переход на главную страницу после успешного входа
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.error || 'Ошибка входа');
+      }
+    } catch (error) {
+      setMessage('Ошибка при попытке входа: ' + error.message);
+    }
   };
 
   return (
     <div className="auth-form">
       <form onSubmit={handleSubmit}>
         <div className="login__field">
-          <i className="login__icon fas fa-user"></i>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             className="login__input"
@@ -36,7 +59,7 @@ const Login = () => {
           />
         </div>
         <div className="login__field">
-          <i className="login__icon fas fa-lock"></i>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             className="login__input"
@@ -49,9 +72,9 @@ const Login = () => {
         </div>
         <button className="button login__submit" type="submit">
           <span className="button__text">Login</span>
-          <i className="button__icon fas fa-chevron-right"></i>
         </button>
       </form>
+      {message && <div className="message">{message}</div>}
     </div>
   );
 };

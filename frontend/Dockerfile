@@ -12,6 +12,9 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
 
+# Устанавливаем react-router-dom
+RUN npm install react-router-dom --silent
+
 # Копируем остальные файлы приложения в рабочую директорию контейнера
 COPY . .
 
