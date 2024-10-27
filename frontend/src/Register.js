@@ -7,7 +7,6 @@ const Register = () => {
     email: '',
     password: '',
   });
-  const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,35 +16,16 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('http://127.0.0.1:5000/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessage(data.message || 'Успешно зарегистрированы!');
-        setFormData({ username: '', email: '', password: '' });
-      } else {
-        const errorData = await response.json();
-        setMessage(errorData.error || 'Ошибка регистрации');
-      }
-    } catch (error) {
-      setMessage('Ошибка при попытке регистрации: ' + error.message);
-    }
+    console.log('Form data:', formData);
   };
 
   return (
     <div className="auth-form">
       <form onSubmit={handleSubmit}>
         <div className="login__field">
-          <label htmlFor="username">Username</label>
+          <i className="login__icon fas fa-user"></i>
           <input
             type="text"
             className="login__input"
@@ -57,7 +37,7 @@ const Register = () => {
           />
         </div>
         <div className="login__field">
-          <label htmlFor="email">Email</label>
+          <i className="login__icon fas fa-envelope"></i>
           <input
             type="email"
             className="login__input"
@@ -69,7 +49,7 @@ const Register = () => {
           />
         </div>
         <div className="login__field">
-          <label htmlFor="password">Password</label>
+          <i className="login__icon fas fa-lock"></i>
           <input
             type="password"
             className="login__input"
@@ -82,9 +62,9 @@ const Register = () => {
         </div>
         <button className="button login__submit" type="submit">
           <span className="button__text">Register Now</span>
+          <i className="button__icon fas fa-chevron-right"></i>
         </button>
       </form>
-      {message && <div className="message">{message}</div>}
     </div>
   );
 };
