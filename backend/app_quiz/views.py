@@ -4,10 +4,11 @@ from datetime import datetime
 from rest_framework import generics
 from app_quiz.models import CustomUser  # Импортируем кастомную модель пользователя
 from app_quiz.serializers import UserSerializer  # Импортируем ваш сериализатор
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import authenticate, login
 import json
-from django.http import JsonResponse
-from django.shortcuts import render
-from app_quiz.models import CustomUser
 
 def get_time(request):
     data = {
@@ -22,20 +23,8 @@ class UserList(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()  # Изменено на CustomUser
     serializer_class = UserSerializer
 
-def register_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        new_user = CustomUser.objects.create_user(email=email, password=password)  # Создаем пользователя
-        return JsonResponse({"message": "User created successfully!"})  # Ответ о создании пользователя
-    return render(request, 'registration.html')  # Возврат формы регистрации
-
-from django.db import connection
-from django.core.exceptions import ObjectDoesNotExist
-
 def get_db_status(request):
     try:
-        # Пытаемся выполнить простой запрос к базе данных
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
         return JsonResponse({'status': 'ok', 'message': 'Database is up and running.'})
@@ -44,12 +33,47 @@ def get_db_status(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@csrf_exempt  # Используйте с осторожностью
 def register_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)  # Получаем данные из JSON
-        email = data.get('email')
-        password = data.get('password')
-        new_user = CustomUser.objects.create_user(email=email, password=password)
-        return JsonResponse({"message": "User created successfully!"})
-    return render(request, 'registration.html')
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
 
+            if not all([username, email, password]):
+                return JsonResponse({"error": "Все поля обязательны"}, status=400)
+
+            # Создаем нового пользователя
+            new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
+            return JsonResponse({"message": "Успешно зарегистрированы!"}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt  # Используйте с осторожностью
+def login_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Успешный вход
+                login(request, user)
+                return JsonResponse({"message": "Успешный вход!"}, status=200)
+            else:
+                # Неверные учетные данные
+                return JsonResponse({"error": "Неверное имя пользователя или пароль."}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=400)

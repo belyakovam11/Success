@@ -6,6 +6,7 @@ const Login = () => {
     username: '',
     password: '',
   });
+  const [message, setMessage] = useState(''); // Для отображения сообщений
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,9 +16,28 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login data:', formData);
+    try {
+      const response = await fetch('http://127.0.0.1:5000/login/', { // Измените на ваш URL для входа
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage(data.message || 'Успешный вход!'); // Успешное сообщение
+        // Здесь вы можете добавить код для перенаправления пользователя или обработки входа
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.error || 'Ошибка входа'); // Сообщение об ошибке
+      }
+    } catch (error) {
+      setMessage('Ошибка при попытке входа: ' + error.message);
+    }
   };
 
   return (
@@ -52,6 +72,7 @@ const Login = () => {
           <i className="button__icon fas fa-chevron-right"></i>
         </button>
       </form>
+      {message && <div className="message">{message}</div>} {/* Отображаем сообщение */}
     </div>
   );
 };

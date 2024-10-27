@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-k&!01)jnglv(0o1@onm0!f84l76sa-w=zahw)bv4*^)_lnyw^9
 DEBUG = True
 
 ALLOWED_HOSTS = ['62.113.103.241', 'localhost', '127.0.0.1']
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 INSTALLED_APPS = [
@@ -145,7 +146,6 @@ CELERY_TIMEZONE = 'UTC'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Разрешите ваш frontend, если он работает на этом порту
     "http://127.0.0.1:3000",
     # Добавьте другие разрешенные источники при необходимости
 ]
