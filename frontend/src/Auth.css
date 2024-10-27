@@ -1,0 +1,42 @@
+/* Auth.css */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f6f5f7;
+  }
+  
+  .auth-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 24px #5c5696;
+    width: 400px;
+  }
+  
+  .toggle-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .toggle-button {
+    flex: 1;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-button.active {
+    background-color: #5d54a4;
+    color: white;
+  }
+  
+  .toggle-button:not(.active) {
+    background-color: #e0e0e0;
+  }
+  

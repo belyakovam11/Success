@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import Login from "./Login";
-import Register from "./Register";
+import Auth from "./Auth"; // Импортируйте ваш компонент auth.js
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,11 +8,7 @@ function App() {
   return (
     <div className="App">
       <div className="auth-container">
-        <div className="toggle-buttons">
-          <button onClick={() => setIsLogin(true)}>Login</button>
-          <button onClick={() => setIsLogin(false)}>Register</button>
-        </div>
-        {isLogin ? <Login /> : <Register />}
+        <Auth isLogin={isLogin} />
       </div>
     </div>
   );
