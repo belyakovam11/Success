@@ -9,6 +9,11 @@ from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login
 import json
+from django.utils.deprecation import MiddlewareMixin
+
+class DisableCSRFMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        setattr(request, '_dont_enforce_csrf_checks', True)
 
 def get_time(request):
     data = {
