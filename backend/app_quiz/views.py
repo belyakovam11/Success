@@ -12,13 +12,24 @@ import json
 
 
 def get_time(request):
-    data = {
-        "Name": "TEST",
-        "Age": 30,
-        "Date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "programming": "Python"
-    }
-    return JsonResponse(data)
+    if request.method in ['POST', 'GET']:  # Поддержка как POST, так и GET запросов
+        try:
+            # Проверяем, существует ли пользователь с именем 'test'
+            if CustomUser.objects.filter(username='test').exists():
+                return JsonResponse({"message": "USER 'test' IS ALREDY!"}, status=200)
+            
+            # Создаем нового пользователя с именем 'test'
+            new_user = CustomUser.objects.create_user(
+                username='test', 
+                email='test@example.com', 
+                password='test123'
+            )
+            return JsonResponse({"message": "USER 'test' CREATED"}, status=201)
+        
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    
+    return JsonResponse({"error": "Invalid request method."}, status=400)
 
 class UserList(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()  # Изменено на CustomUser

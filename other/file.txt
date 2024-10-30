@@ -21,6 +21,16 @@ docker exec -it success-db-1 psql -U django
 \l
 \c django
 
+SELECT * FROM app_quiz_customuser;
+
+ПОДГОТОВКА БД
+ALTER TABLE app_quiz_customuser ADD COLUMN username VARCHAR(150);
+ALTER TABLE app_quiz_customuser ADD COLUMN first_name VARCHAR(30);
+ALTER TABLE app_quiz_customuser ADD COLUMN last_name VARCHAR(150);
+ALTER TABLE app_quiz_customuser ADD COLUMN date_joined TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE app_quiz_customuser ALTER COLUMN created_at DROP NOT NULL;
+
+
 Запускаем в той же директории где и файл .yml (Смотрим через ls в терминале если видим Success а не кучу файлов пишем cd Success и потом опять пишем команду)
 
 Сервисы для работы
