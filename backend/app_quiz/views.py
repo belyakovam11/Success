@@ -9,7 +9,7 @@ from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login
 import json
-
+import sys
 
 def get_time(request):
     if request.method in ['POST', 'GET']:  # Поддержка как POST, так и GET запросов
@@ -24,7 +24,7 @@ def get_time(request):
                 email='test@example.com', 
                 password='test123'
             )
-            return JsonResponse({"message": "USER 'test' CREATED"}, status=201)
+            return JsonResponse({"message": "USER  'test' CREATED"}, status=201)
         
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -54,6 +54,8 @@ def register_view(request):
             email = data.get('email')
             password = data.get('password')
 
+            print(f"Username: {username}, Password: {password}")
+            sys.stdout.flush()  # Сброс вывода
             if not all([username, email, password]):
                 return JsonResponse({"error": "Все поля обязательны"}, status=400)
 
@@ -67,21 +69,25 @@ def register_view(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-@csrf_exempt  # Используйте с осторожностью
+import sys
+
+@csrf_exempt
 def login_view(request):
+    print("login_view вызван", flush=True)
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             username = data.get('username')
             password = data.get('password')
 
+            print(f"Username: {username}, Password: {password}")
+            sys.stdout.flush()  # Сброс вывода
+
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                # Успешный вход
                 login(request, user)
                 return JsonResponse({"message": "Успешный вход!"}, status=200)
             else:
-                # Неверные учетные данные
                 return JsonResponse({"error": "Неверное имя пользователя или пароль."}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
@@ -89,3 +95,4 @@ def login_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
