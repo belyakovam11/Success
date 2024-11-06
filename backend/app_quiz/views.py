@@ -84,6 +84,8 @@ def login_view(request):
             sys.stdout.flush()  # Сброс вывода
 
             user = authenticate(request, username=username, password=password)
+            print(user)
+            sys.stdout.flush()  # Сброс вывода
             if user is not None:
                 login(request, user)
                 return JsonResponse({"message": "Успешный вход!"}, status=200)

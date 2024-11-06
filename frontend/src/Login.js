@@ -32,6 +32,7 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log(data.message)
         setMessage(data.message || 'Успешный вход!');
         navigate('/main'); // переход на главную страницу после успешного входа
       } else {
