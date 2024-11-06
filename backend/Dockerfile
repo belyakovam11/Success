@@ -28,4 +28,4 @@ EXPOSE 5000
 ENV PYTHONUNBUFFERED=1
 
 # Запуск миграций и сервера Django
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:5000"]
+CMD ["sh", "-c", "python manage.py migrate && DJANGO_SETTINGS_MODULE='quiz.settings' python init_sql.py && python manage.py runserver 0.0.0.0:5000"]
