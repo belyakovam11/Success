@@ -10,26 +10,27 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login
 import json
 import sys
+import requests
+
+session = requests.Session()  # Создаем сессию для использования с внешними API
 
 def get_time(request):
-    if request.method in ['POST', 'GET']:  # Поддержка как POST, так и GET запросов
-        try:
-            # Проверяем, существует ли пользователь с именем 'test'
-            if CustomUser.objects.filter(username='test').exists():
-                return JsonResponse({"message": "USER 'test' IS ALREDY!"}, status=200)
-            
-            # Создаем нового пользователя с именем 'test'
-            new_user = CustomUser.objects.create_user(
-                username='test', 
-                email='test@example.com', 
-                password='test123'
-            )
-            return JsonResponse({"message": "USER  'test' CREATED"}, status=201)
-        
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-    
+    if request.method == 'GET':
+        session_id = session.cookies.get('sessionid')  # Получаем sessionid из cookies сессии requests
+        print("Session ID:", session_id)
+        sys.stdout.flush()  # Сброс вывода
+
+        username = session.cookies.get('username')  # Получаем имя из cookies сессии requests
+        print("Username in session:", username)
+        sys.stdout.flush()  # Сброс вывода
+
+        if username:
+            return JsonResponse({"username": username}, status=200)
+        else:
+            return JsonResponse({"error": "Username not found in session."}, status=404)
+
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
 
 class UserList(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()  # Изменено на CustomUser
@@ -69,8 +70,6 @@ def register_view(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-import sys
-
 @csrf_exempt
 def login_view(request):
     print("login_view вызван", flush=True)
@@ -84,11 +83,23 @@ def login_view(request):
             sys.stdout.flush()  # Сброс вывода
 
             user = authenticate(request, username=username, password=password)
-            print(user)
+            print(f"Authenticated user: {user}")
             sys.stdout.flush()  # Сброс вывода
+
             if user is not None:
-                login(request, user)
-                return JsonResponse({"message": "Успешный вход!"}, status=200)
+                # Внешняя сессия
+                session.cookies.set('username', username)  # Сохраняем username в cookies сессии requests
+                print(f"SESSION: {session.cookies.get('username')}")
+                sys.stdout.flush()  # Сброс вывода
+
+                # Выводим всю информацию о сессии
+                print(f"Session ID: {session.cookies.get('sessionid')}")
+                print(f"Session Data: {dict(session.cookies)}")
+                sys.stdout.flush()
+
+                # Отправляем успешный ответ
+                return JsonResponse({"message": "Login successful!"}, status=200)
+
             else:
                 return JsonResponse({"error": "Неверное имя пользователя или пароль."}, status=400)
         except json.JSONDecodeError:
@@ -97,4 +108,3 @@ def login_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
-
