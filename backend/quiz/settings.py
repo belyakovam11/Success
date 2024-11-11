@@ -172,3 +172,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     # Добавьте другие разрешенные источники при необходимости
 ]
+
+# Настройки для отправки почты
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'  # Почтовый сервер 
+EMAIL_PORT = 587  # Порт для SMTP
+EMAIL_USE_TLS = True  # Использовать TLS для безопасности
+EMAIL_HOST_USER = 'world_without_border@mail.ru'  # Ваш email
+EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D'  # Ваш пароль для почты
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Отправитель по умолчанию
