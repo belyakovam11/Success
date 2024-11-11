@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login
 import json
 import sys
 import requests
-
+from app_quiz.tasks import send_registration_email 
 session = requests.Session()  # Создаем сессию для использования с внешними API
 
 def get_time(request):
@@ -46,6 +46,7 @@ def get_db_status(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+
 @csrf_exempt  # Используйте с осторожностью
 def register_view(request):
     if request.method == 'POST':
@@ -62,7 +63,12 @@ def register_view(request):
 
             # Создаем нового пользователя
             new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
+            
+            # После успешной регистрации вызываем асинхронную задачу для отправки письма
+            send_registration_email.delay(email)
+            
             return JsonResponse({"message": "Успешно зарегистрированы!"}, status=201)
+        
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         except Exception as e:
@@ -108,3 +114,24 @@ def login_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+# для хеширования redis
+from django.core.cache import cache
+
+def get_data(request):
+    start_time = datetime.now()  # Засекаем время начала
+    # Попытка получить данные из кэша
+    data = cache.get('my_cache_key')
+
+    if not data:
+        # Если данных в кэше нет, получаем их из базы данных
+        queryset = CustomUser.objects.all()  #получить всех пользователей
+        serializer = UserSerializer(queryset, many=True)
+        data = serializer.data
+        # Кэшируем данные на 15 минут
+        cache.set('my_cache_key', data, timeout=60*15)
+
+    end_time = datetime.now()  # Засекаем время окончания
+    response_time = (end_time - start_time).total_seconds()  # Рассчитываем время ответа
+
+    return JsonResponse({'data': data, 'response_time': response_time})
