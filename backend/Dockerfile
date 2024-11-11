@@ -27,5 +27,5 @@ EXPOSE 5000
 # Установка переменной среды для установки адреса хоста
 ENV PYTHONUNBUFFERED=1
 
-# Запуск миграций и сервера Django
-CMD ["sh", "-c", "python manage.py migrate && DJANGO_SETTINGS_MODULE='quiz.settings' python init_sql.py && python manage.py runserver 0.0.0.0:5000"]
+# Запуск миграций, сервера Django и Celery worker
+CMD ["sh", "-c", "python manage.py migrate && DJANGO_SETTINGS_MODULE='quiz.settings' python init_sql.py && python manage.py runserver 0.0.0.0:5000 & celery -A quiz worker --loglevel=info"]
