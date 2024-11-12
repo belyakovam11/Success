@@ -16,6 +16,9 @@ docker exec -it success-backend-1 /bin/bash
 Команда для pytest
 DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py
 
+ЕСЛИ ВЫ КРАЙНЕ ЛЕНИВЫЙ ЧЕЛОВЕК ОДНОЙ КОМАНДОЙ ЗАПУСКАЕМ ТЕСТ
+docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py"
+
 
 РАБОТА С БД (КОнтейнер посеграсса) ЧЕРЕЗ коносль
 Пишем в новом терминале команду после запуска (она ниже) 
