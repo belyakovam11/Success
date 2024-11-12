@@ -12,8 +12,13 @@ import json
 import sys
 import requests
 from app_quiz.tasks import send_registration_email 
+from django.core.cache import cache # для хеширования redis
+
 session = requests.Session()  # Создаем сессию для использования с внешними API
 
+
+# ПРОСТО КОСТЫЛЬ ДЛЯ ФАСТ ДЕБАГОВ ====================================================================
+# ИСПОЛЬЗОВАТЬ С ЧУСТВОМ ТОЛКОМ И РАСТОНОВКОЙ
 def get_time(request):
     if request.method == 'GET':
         session_id = session.cookies.get('sessionid')  # Получаем sessionid из cookies сессии requests
@@ -30,6 +35,17 @@ def get_time(request):
             return JsonResponse({"error": "Username not found in session."}, status=404)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
+#======================================================================================================
+
+@csrf_exempt
+def get_username(request):
+    username = session.cookies.get('username')  # Получаем имя из cookies сессии requests
+    if username:
+        return JsonResponse({"username": username})
+    else:
+        return JsonResponse({"error": "User is not logged in"}, status=400)
+
+
 
 
 class UserList(generics.ListCreateAPIView):
@@ -115,8 +131,6 @@ def login_view(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-# для хеширования redis
-from django.core.cache import cache
 
 def get_data(request):
     start_time = datetime.now()  # Засекаем время начала

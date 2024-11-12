@@ -1,5 +1,3 @@
-! ЛУЧШЕ ТАК НЕ ДЕЛАТЬ В РЕАЛЬНОМ ПРОЕКТЕ !
-
 Запуск команд
 
 Питон 
@@ -7,35 +5,28 @@
 .\env\Scripts\activate
 
 Запуск компоуза
-
 docker-compose up --build
 
 удалить все образы
-
 docker rmi -f $(docker images -q)
 
-подключение к контейнеру с бекендом
+КАК ЗАПУСТИТЬ ТЕСТ (ДЕЛАЕМ ОТДЕЛЬНУЮ КОНСОЛЬ ЗАХОДИМ В БЕК И ПИШЕМ КОМАНДУ ДЛЯ ТЕСТОВ ВСЕ НИЖЕ)
+подключение к контейнеру с БЕКЕНД
 docker exec -it success-backend-1 /bin/bash
-
-
 Команда для pytest
-DJANGO_SETTINGS_MODULE='quiz.settings' pytest tests.py
+DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py
 
 
 РАБОТА С БД (КОнтейнер посеграсса) ЧЕРЕЗ коносль
 Пишем в новом терминале команду после запуска (она ниже) 
 docker exec -it success-db-1 psql -U django
-\l
-\c django
 
 SELECT * FROM app_quiz_customuser;
 
-ПОДГОТОВКА БД
-ALTER TABLE app_quiz_customuser ADD COLUMN username VARCHAR(150);
-ALTER TABLE app_quiz_customuser ADD COLUMN first_name VARCHAR(30);
-ALTER TABLE app_quiz_customuser ADD COLUMN last_name VARCHAR(150);
-ALTER TABLE app_quiz_customuser ADD COLUMN date_joined TIMESTAMP WITH TIME ZONE DEFAULT NOW();
-ALTER TABLE app_quiz_customuser ALTER COLUMN created_at DROP NOT NULL;
+
+ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ
+\l
+\c django
 
 
 Запускаем в той же директории где и файл .yml (Смотрим через ls в терминале если видим Success а не кучу файлов пишем cd Success и потом опять пишем команду)

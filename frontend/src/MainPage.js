@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MainPage.css';
 
 const MainPage = () => {
+  const [username, setUsername] = useState(null);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [roomDetails, setRoomDetails] = useState({
     name: '',
@@ -26,6 +27,25 @@ const MainPage = () => {
       freeSpaces: 1,
     },
   ];
+
+  // Функция для получения username с сервера
+  const fetchUsername = async () => {
+    try {
+      const response = await fetch('/get-username/');
+      if (response.ok) {
+        const data = await response.json();
+        setUsername(data.username);
+      } else {
+        console.error('Ошибка при получении имени пользователя', await response.json());
+      }
+    } catch (error) {
+      console.error('Ошибка при запросе на сервер:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsername(); // Получаем имя пользователя при загрузке компонента
+  }, []);
 
   const handleRoomClick = (room) => {
     setSelectedRoom(room);
@@ -58,7 +78,7 @@ const MainPage = () => {
           alt="Профиль"
           className="profile-pic"
         />
-        <h2>Luntizz</h2>
+        <h2>{username || 'Загрузка...'}</h2> {/* Показываем имя пользователя */}
         <p>Рейтинг: 1500</p>
         <p>Любимая категория: Насекомые</p>
       </div>
