@@ -1,13 +1,11 @@
-from django.contrib import admin
 from django.urls import path
-from app_quiz.views import get_time, get_db_status, UserList, register_view, login_view, get_username
-
+from app_quiz.views.auth_views import login_view, get_username
+from app_quiz.views.db_views import get_db_status, get_data
+from app_quiz.views.user_views import register_view
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('data/', get_time, name='get_time'),
-    path('api/db-status/', get_db_status, name='db_status'),
-    path('api/users/', UserList.as_view(), name='user_list'),
+    path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),  # Маршрут для логина
-     path('get-username/', get_username, name='get_username'),
+    path('get-username/', get_username, name='get_username'),
+    path('db-status/', get_db_status, name='db_status'),
+    path('data/', get_data, name='get_data'),
 ]
