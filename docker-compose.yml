@@ -13,6 +13,11 @@ services:
       - SESSION_ENGINE=django.contrib.sessions.backends.cache
       - SESSION_CACHE_ALIAS=default
       - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=django
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
     depends_on:
       - db
       - rabbitmq
