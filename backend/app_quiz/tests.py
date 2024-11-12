@@ -61,7 +61,7 @@ def test_successful_registration(api_client, mock_send_registration_email):
 
 @pytest.mark.django_db
 def test_failed_registration(api_client):
-    url = reverse('register')  # Исправлено с 'register_view' на 'register'
+    url = reverse('register')  
     data = {
         "username": "user_without_password",
         "email": "user@example.com"
@@ -73,7 +73,7 @@ def test_failed_registration(api_client):
 @pytest.mark.django_db
 def test_successful_login(api_client, create_user):
     create_user(username="login_user", password="password123")
-    url = reverse('login')  # Исправлено с 'login_view' на 'login'
+    url = reverse('login') 
     data = {
         "username": "login_user",
         "password": "password123"
@@ -84,7 +84,7 @@ def test_successful_login(api_client, create_user):
 
 @pytest.mark.django_db
 def test_failed_login(api_client):
-    url = reverse('login')  # Исправлено с 'login_view' на 'login'
+    url = reverse('login') 
     data = {
         "username": "wrong_user",
         "password": "wrong_password"
@@ -99,7 +99,7 @@ def test_session_saved_after_login(api_client, create_user):
     create_user(username="session_user", password="session_password")
 
     # Логинимся
-    url_login = reverse('login')  # Убедитесь, что 'login' — это правильное имя URL
+    url_login = reverse('login') 
     data = {
         "username": "session_user",
         "password": "session_password"

@@ -18,7 +18,7 @@ RUN pip install --upgrade pip
 # Установка Python-зависимостей
 RUN pip install --no-cache-dir -r requirements.txt  # Устанавливаются все зависимости
 
-# Установка pytest-django (если хотите установить отдельно)
+# Установка pytest-django
 RUN pip install pytest-django
 
 # Копируем всё содержимое проекта в рабочую директорию
