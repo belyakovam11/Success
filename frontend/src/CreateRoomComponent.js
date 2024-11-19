@@ -24,9 +24,8 @@ const CreateRoomComponent = () => {
         // Закрытие формы
         setShowCreateRoom(false);
 
-        // Здесь можно добавить код для отправки данных на сервер
-        // например, с использованием fetch или axios
-        fetch('/api/create-room', {
+        // Отправка данных на сервер
+        fetch('http://localhost:8000/api/create-room', {  // полный путь к серверу
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,7 +35,7 @@ const CreateRoomComponent = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log('Комната создана:', data);
-                // Здесь можно добавить логику, если комната успешно создана
+                // Логика после успешного создания комнаты
             })
             .catch((error) => {
                 console.error('Ошибка при создании комнаты:', error);
