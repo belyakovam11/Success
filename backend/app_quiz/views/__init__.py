@@ -2,9 +2,6 @@ from django.http import JsonResponse
 import sys
 import requests
 
-
-
-
 session = requests.Session() 
 
 def get_time(request):
