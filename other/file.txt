@@ -25,7 +25,7 @@ docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings
 docker exec -it success-db-1 psql -U django
 
 SELECT * FROM app_quiz_customuser;
-
+SELECT * FROM app_quiz_room;
 
 ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ
 \l
