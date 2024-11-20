@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './MainPage.css';
 
 const MainPage = () => {
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState('');
+  const [availableRooms, setAvailableRooms] = useState([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [roomDetails, setRoomDetails] = useState({
     name: '',
     playerCount: '',
@@ -11,50 +13,63 @@ const MainPage = () => {
     answerTime: '',
   });
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [showModal, setShowModal] = useState(false);
 
-  const availableRooms = [
-    {
-      name: 'Комната 1',
-      theme: 'История',
-      answerTime: '30 сек',
-      freeSpaces: 2,
-    },
-    {
-      name: 'Комната 2',
-      theme: 'Наука',
-      answerTime: '20 сек',
-      freeSpaces: 1,
-    },
-  ];
-
-  // Функция для получения username с сервера
+  // Получение имени пользователя
   const fetchUsername = async () => {
     try {
       const response = await fetch('/get-username/');
-      if (response.ok) {
-        const data = await response.json();
-        setUsername(data.username);
-      } else {
-        console.error('Ошибка при получении имени пользователя', await response.json());
-      }
+      const data = await response.json();
+      setUsername(data.username);
     } catch (error) {
-      console.error('Ошибка при запросе на сервер:', error);
+      console.error('Ошибка при получении имени пользователя:', error);
     }
   };
 
-  useEffect(() => {
-    fetchUsername(); // Получаем имя пользователя при загрузке компонента
-  }, []);
+  // Получение доступных комнат
+  const fetchAvailableRooms = async () => {
+    try {
+      const response = await fetch('/api/user-rooms');
+      const data = await response.json();
+      setAvailableRooms(data.rooms || []);
+    } catch (error) {
+      console.error('Ошибка при получении доступных комнат:', error);
+    }
+  };
 
-  const handleRoomClick = (room) => {
+  // Функция для добавления новой комнаты в список
+  const addNewRoom = (newRoom) => {
+    setAvailableRooms((prevRooms) => {
+      const updatedRooms = [...prevRooms, newRoom];
+      localStorage.setItem('rooms', JSON.stringify(updatedRooms)); // Сохраняем в localStorage
+      return updatedRooms;
+    });
+    setToastMessage('Комната успешно создана!');
+    setTimeout(() => setToastMessage(''), 3000);
+  };
+
+  // Функция для выбора комнаты
+  const selectRoom = (room) => {
     setSelectedRoom(room);
-    setShowModal(true);
+    setToastMessage(`Вы подключились к комнате: ${room.name}`);
+    localStorage.setItem('selectedRoom', JSON.stringify(room)); // Сохраняем выбранную комнату в localStorage
+    setTimeout(() => setToastMessage(''), 3000);
   };
 
-  const handleJoinRoom = () => {
-    window.location.href = '/room'; // Переход в комнату
-  };
+  useEffect(() => {
+    fetchUsername();
+    const savedRooms = JSON.parse(localStorage.getItem('rooms'));
+    if (savedRooms) {
+      setAvailableRooms(savedRooms);
+    } else {
+      fetchAvailableRooms(); // Загружаем с сервера, если в localStorage ничего нет
+    }
+
+    const savedSelectedRoom = JSON.parse(localStorage.getItem('selectedRoom'));
+    if (savedSelectedRoom) {
+      setSelectedRoom(savedSelectedRoom);
+      setToastMessage(`Вы выбрали комнату: ${savedSelectedRoom.name}`);
+    }
+  }, []);
 
   const handleCreateRoom = () => {
     setShowCreateRoom(true);
@@ -62,38 +77,17 @@ const MainPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Изменение данных: ${name} = ${value}`); // Логирование изменений
     setRoomDetails({ ...roomDetails, [name]: value });
   };
 
   const handleSubmitRoom = (e) => {
     e.preventDefault();
-    console.log("Данные комнаты при отправке:", roomDetails); // Логирование данных перед отправкой
-
-    // Закрытие формы
+    addNewRoom(roomDetails);
     setShowCreateRoom(false);
-
-    // Отправка данных на сервер
-    fetch('/api/create-room', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(roomDetails),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Комната создана:', data);
-        // Логика при успешном создании комнаты
-      })
-      .catch((error) => {
-        console.error('Ошибка при создании комнаты:', error);
-      });
   };
 
   return (
     <div className="main-page">
-      {/* Карточка игрока */}
       <div className="player-card">
         <img
           src={`${process.env.PUBLIC_URL}/img/quizz_profile.jpg`}
@@ -105,22 +99,25 @@ const MainPage = () => {
         <p>Любимая категория: Насекомые</p>
       </div>
 
-      {/* Список доступных комнат */}
       <h2>Доступные комнаты:</h2>
       <div className="room-container">
-        {availableRooms.map((room, index) => (
-          <div
-            className="room-card"
-            key={index}
-            onClick={() => handleRoomClick(room)}
-          >
-            {room.name}
-          </div>
-        ))}
+        {availableRooms.length > 0 ? (
+          availableRooms.map((room, index) => (
+            <div
+              className="room-card"
+              key={index}
+              onClick={() => selectRoom(room)} // При клике на комнату
+            >
+              {room.name}
+            </div>
+          ))
+        ) : (
+          <p>У вас нет доступных комнат.</p>
+        )}
       </div>
 
-      {/* Модальное окно с деталями комнаты */}
-      {showModal && selectedRoom && (
+      {/* Модальное окно с деталями выбранной комнаты */}
+      {selectedRoom && (
         <div className="modal-overlay active">
           <div className="selected-room-card">
             <h3>Информация о комнате</h3>
@@ -133,22 +130,29 @@ const MainPage = () => {
             <p>
               <strong>Количество свободных мест:</strong> {selectedRoom.freeSpaces}
             </p>
-            <button className="join-room-button" onClick={handleJoinRoom}>
+            <button
+              className="join-room-button"
+              onClick={() => window.location.href = '/room'} // Переход в комнату
+            >
               Подключиться к комнате
             </button>
-            <button className="back-button" onClick={() => setShowModal(false)}>
+            <button className="back-button" onClick={() => setSelectedRoom(null)}>
               Назад
             </button>
           </div>
         </div>
       )}
 
-      {/* Кнопка создания комнаты */}
+      {toastMessage && (
+        <div className="toast">
+          {toastMessage}
+        </div>
+      )}
+
       <button className="create-room-button" onClick={handleCreateRoom}>
         Создать комнату
       </button>
 
-      {/* Модальное окно для создания комнаты */}
       {showCreateRoom && (
         <div className="modal-overlay active">
           <div className="modal-content">
