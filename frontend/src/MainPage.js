@@ -174,14 +174,19 @@ const MainPage = () => {
                 onChange={handleInputChange}
                 required
               />
-              <input
-                type="text"
+              <select
                 name="theme"
-                placeholder="Тема викторины"
                 value={roomDetails.theme}
                 onChange={handleInputChange}
                 required
-              />
+              >
+                <option value="" disabled>
+                  Выберите тему
+                </option>
+                <option value="Спорт">Спорт</option>
+                <option value="История">История</option>
+              </select>
+
               <input
                 type="number"
                 name="answerTime"
