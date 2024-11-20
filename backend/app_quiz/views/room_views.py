@@ -51,11 +51,6 @@ def create_room(request):
 
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from app_quiz.models import Room
-
 @csrf_exempt
 def join_room(request):
     if request.method == 'POST':
