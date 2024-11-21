@@ -25,16 +25,25 @@ const MainPage = () => {
     }
   };
 
-  // Получение доступных комнат
   const fetchAvailableRooms = async () => {
     try {
       const response = await fetch('/api/user-rooms');
-      const data = await response.json();
-      setAvailableRooms(data.rooms || []);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Ошибка:', errorData.error);
+        setToastMessage(errorData.error || 'Ошибка при получении доступных комнат');
+        if (errorData.error === 'Необходимо авторизоваться') {
+          // Handle redirect to login or show login modal
+        }
+      } else {
+        const data = await response.json();
+        setAvailableRooms(data.rooms || []);
+      }
     } catch (error) {
       console.error('Ошибка при получении доступных комнат:', error);
     }
   };
+
 
   // Функция для добавления новой комнаты в список
   const addNewRoom = (newRoom) => {
