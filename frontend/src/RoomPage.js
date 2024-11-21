@@ -11,16 +11,33 @@ const RoomPage = () => {
     timer: 10, // Время на ответ (в секундах)
   });
   const [remainingTime, setRemainingTime] = useState(question.timer);
+  const [hasFetched, setHasFetched] = useState(false); // Флаг для предотвращения зацикливания
 
   useEffect(() => {
     if (!name) return;
 
-    // Загружаем участников комнаты
-    fetch(`/api/room/${name}/participants/`)
-      .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error('Ошибка загрузки участников:', error));
-  }, [name]);
+    const fetchParticipants = () => {
+      fetch(`/api/room/${name}/participants/`)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            throw new Error('Не удалось загрузить участников');
+          }
+        })
+        .then((data) => setUsers(data))
+        .catch((error) => console.error('Ошибка загрузки участников:', error));
+    };
+
+    // Загружаем участников при первом рендере
+    fetchParticipants();
+
+    // Устанавливаем периодическую проверку данных
+    const interval = setInterval(fetchParticipants, 5000); // Обновляем список участников каждые 5 секунд
+
+    // Очистка интервала при размонтировании компонента
+    return () => clearInterval(interval);
+  }, [name]); // Запускаем только при изменении имени комнаты
 
   useEffect(() => {
     if (remainingTime > 0) {
