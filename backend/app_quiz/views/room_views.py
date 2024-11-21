@@ -4,54 +4,6 @@ import json
 from app_quiz.models import Room
 
 @csrf_exempt
-def create_room(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            room_name = data.get('name')
-            player_count = data.get('playerCount')
-            theme = data.get('theme')
-            answer_time = data.get('answerTime')
-
-            # Проверка, что все поля заполнены
-            if not all([room_name, player_count, theme, answer_time]):
-                return JsonResponse({'error': 'Все поля обязательны'}, status=400)
-
-            # Проверка на существование комнаты с таким же названием
-            if Room.objects.filter(name=room_name).exists():
-                return JsonResponse({'error': 'Комната с таким названием уже существует'}, status=400)
-
-            # Создание комнаты
-            room = Room.objects.create(
-                name=room_name,
-                player_count=player_count,
-                theme=theme,
-                answer_time=answer_time,
-                created_by=request.user if request.user.is_authenticated else None
-            )
-
-            # Добавление текущего пользователя как участника
-            if request.user.is_authenticated:
-                room.participants.add(request.user)
-
-            return JsonResponse({
-                'message': 'Комната успешно создана',
-                'room': {
-                    'id': room.id,
-                    'name': room.name,
-                    'playerCount': room.player_count,
-                    'theme': room.theme,
-                    'answerTime': room.answer_time,
-                    'createdBy': room.created_by.username if room.created_by else None,
-                    'createdAt': room.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                }
-            })
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-
-
-@csrf_exempt
 def join_room(request):
     if request.method == 'POST':
         try:
