@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from app_quiz.models import Room
+from app_quiz.models import Room, RoomParticipant
 
 def rooms(request):
     # Получаем все комнаты через ORM
@@ -19,3 +19,11 @@ def rooms(request):
     
     # Возвращаем JSON ответ
     return JsonResponse(rooms, safe=False)
+
+def get_room_participants(request, room_name):
+    try:
+        room = Room.objects.get(name=room_name)
+        participants = RoomParticipant.objects.filter(room=room).values('user', 'joined_at')
+        return JsonResponse(list(participants), safe=False)
+    except Room.DoesNotExist:
+        return JsonResponse({'error': 'Room not found'}, status=404)

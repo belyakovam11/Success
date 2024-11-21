@@ -3,7 +3,7 @@ from app_quiz.views.auth_views import login_view, get_username
 from app_quiz.views.db_views import get_db_status, get_data
 from app_quiz.views.user_views import register_view
 from app_quiz.views.room_views import create_room, join_room
-from app_quiz.views.get_room_views import rooms
+from app_quiz.views.get_room_views import rooms, get_room_participants
 
 urlpatterns = [
     path('login/', login_view, name='login'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('api/create-room', create_room, name='create_room'),  # Для создания комнаты
     path('api/join-room', join_room, name='join_room'),  # Для присоединения к комнате
     path('api/rooms', rooms, name='rooms'),  # Для получения списка комнат
+    path('api/room/<str:room_name>/participants/', get_room_participants, name='get_room_participants'),
 ]
