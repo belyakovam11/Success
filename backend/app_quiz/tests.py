@@ -6,7 +6,9 @@ from rest_framework.test import APIClient
 from app_quiz.models import CustomUser
 from django.core.management import call_command
 from unittest.mock import patch
-from app_quiz.models import CustomUser  # Импортируем модели после django.setup()
+from app_quiz.models import CustomUser,Question  
+from app_quiz.views.get_quiz import get_questions_by_theme  # Импортируем вашу функцию
+
 
 # Django setup for pytest
 django.setup()
@@ -112,3 +114,38 @@ def test_session_saved_after_login(api_client, create_user):
     session_data = api_client.session
     assert session_data is not None  # Проверяем, что сессия содержит идентификатор пользователя
 
+
+@pytest.mark.django_db
+def test_get_questions_by_theme(create_user):
+    # Создаем несколько вопросов с разными темами
+    question_1 = Question.objects.create(
+        text='Кто выиграл чемпионат мира 2018 года?',
+        options='Бразилия,Франция,Германия,Аргентина',
+        correct_answer='Франция',
+        answer_time=10,
+        theme='Спорт'
+    )
+    question_2 = Question.objects.create(
+        text='Какой год был основан Твиттер?',
+        options='2004,2005,2006,2007',
+        correct_answer='2006',
+        answer_time=10,
+        theme='Технологии'
+    )
+    question_3 = Question.objects.create(
+        text='Какая страна выиграла чемпионат мира по футболу в 2014 году?',
+        options='Германия,Аргентина,Бразилия,Нидерланды',
+        correct_answer='Германия',
+        answer_time=10,
+        theme='Спорт'
+    )
+
+    # Вызов функции для темы 'Спорт'
+    sport_questions = get_questions_by_theme('Спорт')
+
+    # Проверяем, что в списке вопросов только вопросы с темой 'Спорт'
+    assert sport_questions.count() == 2
+    assert all(question.theme == 'Спорт' for question in sport_questions)
+    assert question_1 in sport_questions
+    assert question_3 in sport_questions
+    assert question_2 not in sport_questions

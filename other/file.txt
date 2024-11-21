@@ -30,6 +30,8 @@ docker exec -it success-db-1 psql -U django
 SELECT * FROM app_quiz_customuser;
 SELECT * FROM app_quiz_room;
 SELECT * FROM app_quiz_roomparticipant;
+SELECT * FROM app_quiz_question;
+
 
 ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ
 \l
