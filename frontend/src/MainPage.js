@@ -27,7 +27,7 @@ const MainPage = () => {
 
   const fetchAvailableRooms = async () => {
     try {
-      const response = await fetch('/api/user-rooms');
+      const response = await fetch('/api/rooms');
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Ошибка:', errorData.error);
@@ -37,13 +37,12 @@ const MainPage = () => {
         }
       } else {
         const data = await response.json();
-        setAvailableRooms(data.rooms || []);
+        setAvailableRooms(data); // Здесь нужно просто передать полученные данные
       }
     } catch (error) {
       console.error('Ошибка при получении доступных комнат:', error);
     }
   };
-
 
   // Функция для добавления новой комнаты в список
   const addNewRoom = (newRoom) => {
@@ -97,6 +96,7 @@ const MainPage = () => {
       },
       body: JSON.stringify(roomDetails),
     })
+
       .then((response) => response.json())
       .then((data) => {
         console.log('Комната создана:', data);
@@ -111,7 +111,6 @@ const MainPage = () => {
     const { name, value } = e.target;
     setRoomDetails({ ...roomDetails, [name]: value });
   };
-
 
 
   return (
@@ -136,7 +135,7 @@ const MainPage = () => {
               key={index}
               onClick={() => selectRoom(room)} // При клике на комнату
             >
-              {room.name}
+              {room.name} {/* Отображаем только название комнаты */}
             </div>
           ))
         ) : (

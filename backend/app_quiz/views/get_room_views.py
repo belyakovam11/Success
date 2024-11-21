@@ -1,20 +1,21 @@
 from django.http import JsonResponse
 from app_quiz.models import Room
 
-def user_rooms(request):
-    try:
-        rooms = Room.objects.filter(created_by=request.user)  # Фильтруем комнаты по пользователю
-        rooms_data = []
-        for room in rooms:
-            rooms_data.append({
-                'id': room.id,
-                'name': room.name,
-                'playerCount': room.player_count,
-                'theme': room.theme,
-                'answerTime': room.answer_time,
-                'createdBy': room.created_by.username if room.created_by else None,
-                'createdAt': room.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            })
-        return JsonResponse({'rooms': rooms_data})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+def rooms(request):
+    # Получаем все комнаты через ORM
+    rooms_queryset = Room.objects.all()
+    
+    # Преобразуем queryset в список словарей
+    rooms = []
+    for room in rooms_queryset:
+        rooms.append({
+            'id': room.id,
+            'name': room.name,
+            'player_count': room.player_count,
+            'theme': room.theme,
+            'answer_time': room.answer_time,
+            'created_at': room.created_at.isoformat(),  # Преобразуем datetime в строку
+        })
+    
+    # Возвращаем JSON ответ
+    return JsonResponse(rooms, safe=False)

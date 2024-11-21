@@ -39,6 +39,8 @@ def create_room(request):
             theme = data.get('theme')
             answer_time = data.get('answerTime')
 
+            print("Полученные данные:", data)  # Логируем данные
+
             # Проверка, что все поля заполнены
             if not all([room_name, player_count, theme, answer_time]):
                 return JsonResponse({'error': 'Все поля обязательны'}, status=400)
@@ -47,19 +49,14 @@ def create_room(request):
             if Room.objects.filter(name=room_name).exists():
                 return JsonResponse({'error': 'Комната с таким названием уже существует'}, status=400)
 
-            # Проверка на существование пользователя, если он аутентифицирован
-            created_by = request.user if request.user.is_authenticated else None
-
             # Создание новой комнаты
             room = Room.objects.create(
                 name=room_name,
                 player_count=player_count,
                 theme=theme,
-                answer_time=answer_time,
-                created_by=created_by  # Сохраняем пользователя, если он аутентифицирован
+                answer_time=answer_time
             )
 
-            # Возвращаем информацию о созданной комнате
             return JsonResponse({
                 'message': 'Комната успешно создана',
                 'room': {
@@ -68,9 +65,8 @@ def create_room(request):
                     'playerCount': room.player_count,
                     'theme': room.theme,
                     'answerTime': room.answer_time,
-                    'createdBy': room.created_by.username if room.created_by else None,
-                    'createdAt': room.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                 }
             })
         except Exception as e:
+            print("Ошибка:", str(e))  # Логируем ошибку
             return JsonResponse({'error': str(e)}, status=400)
