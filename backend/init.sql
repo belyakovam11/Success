@@ -37,3 +37,5 @@ BEGIN
         ALTER TABLE app_quiz_customuser ALTER COLUMN created_at DROP NOT NULL;
     END IF;
 END $$;
+
+TRUNCATE TABLE app_quiz_roomparticipant RESTART IDENTITY CASCADE;

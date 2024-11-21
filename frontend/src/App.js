@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/main" element={<MainPage />} />
-        <Route path="/room" element={<RoomPage />} />
+        <Route path="/room/:name" element={<RoomPage />} />
         <Route path="/profile" element={<UserProfile />} /> {/* Новый маршрут */}
       </Routes>
     </Router>

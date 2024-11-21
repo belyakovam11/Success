@@ -20,12 +20,16 @@ DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py
 docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py"
 
 
+python manage.py makemigrations
+
+
 РАБОТА С БД (КОнтейнер посеграсса) ЧЕРЕЗ коносль
 Пишем в новом терминале команду после запуска (она ниже) 
 docker exec -it success-db-1 psql -U django
 
 SELECT * FROM app_quiz_customuser;
 SELECT * FROM app_quiz_room;
+SELECT * FROM app_quiz_roomparticipant;
 
 ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ
 \l

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate для редиректа
 import './MainPage.css';
 
 const MainPage = () => {
@@ -13,6 +14,7 @@ const MainPage = () => {
     answerTime: '',
   });
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const navigate = useNavigate(); // Для навигации
 
   // Получение имени пользователя
   const fetchUsername = async () => {
@@ -25,86 +27,87 @@ const MainPage = () => {
     }
   };
 
+  // Получение доступных комнат
   const fetchAvailableRooms = async () => {
     try {
       const response = await fetch('/api/rooms');
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Ошибка:', errorData.error);
-        setToastMessage(errorData.error || 'Ошибка при получении доступных комнат');
-        if (errorData.error === 'Необходимо авторизоваться') {
-          // Handle redirect to login or show login modal
-        }
-      } else {
+      if (response.ok) {
         const data = await response.json();
-        setAvailableRooms(data); // Здесь нужно просто передать полученные данные
+        setAvailableRooms(data);
+      } else {
+        const errorData = await response.json();
+        setToastMessage(errorData.error || 'Ошибка при получении доступных комнат');
       }
     } catch (error) {
       console.error('Ошибка при получении доступных комнат:', error);
+      setToastMessage('Ошибка при получении доступных комнат');
     }
   };
 
   // Функция для добавления новой комнаты в список
   const addNewRoom = (newRoom) => {
-    setAvailableRooms((prevRooms) => {
-      const updatedRooms = [...prevRooms, newRoom];
-      localStorage.setItem('rooms', JSON.stringify(updatedRooms)); // Сохраняем в localStorage
-      return updatedRooms;
-    });
+    setAvailableRooms((prevRooms) => [newRoom, ...prevRooms]);
     setToastMessage('Комната успешно создана!');
     setTimeout(() => setToastMessage(''), 3000);
   };
 
   // Функция для выбора комнаты
-  const selectRoom = (room) => {
-    setSelectedRoom(room);
-    setToastMessage(`Вы подключились к комнате: ${room.name}`);
-    localStorage.setItem('selectedRoom', JSON.stringify(room)); // Сохраняем выбранную комнату в localStorage
-    setTimeout(() => setToastMessage(''), 3000);
+  const selectRoom = async (room) => {
+    try {
+      const response = await fetch('/api/join-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ roomName: room.name, username: username }),
+      });
+
+      const data = await response.json();
+
+      if (data.roomId && data.userId) {
+        setSelectedRoom(room);
+        setToastMessage(`Вы подключились к комнате: ${room.name}`);
+        // После успешного подключения перенаправляем на комнату
+        navigate(`/room/${room.name}`); // Используем navigate для перехода в комнату
+      } else {
+        setToastMessage('Не удалось подключиться к комнате');
+      }
+    } catch (error) {
+      console.error('Ошибка при подключении к комнате:', error);
+      setToastMessage('Ошибка при подключении к комнате');
+    }
   };
 
-  useEffect(() => {
-    fetchUsername();
-    const savedRooms = JSON.parse(localStorage.getItem('rooms'));
-    if (savedRooms) {
-      setAvailableRooms(savedRooms);
-    } else {
-      fetchAvailableRooms(); // Загружаем с сервера, если в localStorage ничего нет
-    }
-
-    const savedSelectedRoom = JSON.parse(localStorage.getItem('selectedRoom'));
-    if (savedSelectedRoom) {
-      setSelectedRoom(savedSelectedRoom);
-      setToastMessage(`Вы выбрали комнату: ${savedSelectedRoom.name}`);
-    }
-  }, []);
-
+  // Функция для создания новой комнаты
   const handleCreateRoom = () => {
     setShowCreateRoom(true);
   };
 
-  const handleSubmitRoom = (e) => {
+  const handleSubmitRoom = async (e) => {
     e.preventDefault();
-    console.log("Данные комнаты при отправке:", roomDetails); // Логирование данных перед отправкой
-    // Закрытие формы
-    setShowCreateRoom(false);
-    // Отправка данных на сервер
-    fetch('/api/create-room', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(roomDetails),
-    })
-
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Комната создана:', data);
-        // Логика при успешном создании комнаты
-      })
-      .catch((error) => {
-        console.error('Ошибка при создании комнаты:', error);
+    try {
+      const response = await fetch('/api/create-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(roomDetails),
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        addNewRoom(data); // Добавляем новую комнату
+        // После успешного создания комнаты перенаправляем на нее
+        navigate(`/room/${data.name}`); // Переход в созданную комнату
+      } else {
+        setToastMessage(data.error || 'Ошибка при создании комнаты');
+      }
+    } catch (error) {
+      console.error('Ошибка при создании комнаты:', error);
+      setToastMessage('Ошибка при создании комнаты');
+    }
+    setShowCreateRoom(false); // Закрываем форму создания комнаты
   };
 
   const handleInputChange = (e) => {
@@ -112,6 +115,10 @@ const MainPage = () => {
     setRoomDetails({ ...roomDetails, [name]: value });
   };
 
+  useEffect(() => {
+    fetchUsername();
+    fetchAvailableRooms();
+  }, [username]);
 
   return (
     <div className="main-page">
@@ -159,7 +166,7 @@ const MainPage = () => {
             </p>
             <button
               className="join-room-button"
-              onClick={() => window.location.href = '/room'} // Переход в комнату
+              onClick={() => navigate(`/room/${selectedRoom.name}`)} // Переход в комнату
             >
               Подключиться к комнате
             </button>

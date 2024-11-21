@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from app_quiz.models import Room
+from app_quiz.models import Room, RoomParticipant
 
 @csrf_exempt
 def join_room(request):
@@ -9,6 +9,7 @@ def join_room(request):
         try:
             data = json.loads(request.body)
             room_name = data.get('roomName')
+            username = data.get('username')  # Получаем имя пользователя из данных
 
             # Проверка существования комнаты
             room = Room.objects.filter(name=room_name).first()
@@ -21,13 +22,12 @@ def join_room(request):
                 return JsonResponse({'error': 'Лимит игроков в комнате исчерпан'}, status=400)
 
             # Добавление пользователя в комнату
-            if request.user.is_authenticated:
-                room.participants.add(request.user)
+            participant, created = RoomParticipant.objects.get_or_create(user=username, room=room)
 
-            return JsonResponse({'message': f'Вы присоединились к комнате {room_name}'})
+            return JsonResponse({'message': f'Вы присоединились к комнате {room_name}', 'roomId': room.id, 'userId': username})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-        
+
 
 @csrf_exempt
 def create_room(request):
