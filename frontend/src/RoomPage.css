@@ -38,6 +38,19 @@ h1 {
     border-bottom: 1px solid #eee;
 }
 
+.instructions {
+    width: 500px;
+    background-color: #ffffff;
+    border: 2px solid #6a679e;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #555555;
+}
+
 .quiz-section {
     width: 500px;
     background-color: #ffffff;
@@ -99,4 +112,19 @@ h1 {
 
 .next-question-button:hover {
     background-color: #d32f2f;
+}
+
+.start-button {
+    padding: 10px 20px;
+    background-color: #6a679e;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.start-button:hover {
+    background-color: #5d54a4;
 }

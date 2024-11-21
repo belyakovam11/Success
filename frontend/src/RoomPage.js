@@ -5,12 +5,9 @@ import './RoomPage.css';
 const RoomPage = () => {
   const { name } = useParams(); // Получаем параметр "name" из URL
   const [users, setUsers] = useState([]);
-  const [question, setQuestion] = useState({
-    text: 'Какой год был основан React?',
-    options: ['2010', '2013', '2015', '2018'],
-    timer: 10, // Время на ответ (в секундах)
-  });
-  const [remainingTime, setRemainingTime] = useState(question.timer);
+  const [question, setQuestion] = useState(null); // Начальное состояние без вопроса
+  const [remainingTime, setRemainingTime] = useState(null);
+  const [quizStarted, setQuizStarted] = useState(false); // Флаг для отслеживания старта викторины
   const [hasFetched, setHasFetched] = useState(false); // Флаг для предотвращения зацикливания
 
   useEffect(() => {
@@ -25,7 +22,10 @@ const RoomPage = () => {
             throw new Error('Не удалось загрузить участников');
           }
         })
-        .then((data) => setUsers(data))
+        .then((data) => {
+          setUsers(data);
+          setHasFetched(true); // Устанавливаем флаг, когда данные загружены
+        })
         .catch((error) => console.error('Ошибка загрузки участников:', error));
     };
 
@@ -33,18 +33,28 @@ const RoomPage = () => {
     fetchParticipants();
 
     // Устанавливаем периодическую проверку данных
-    const interval = setInterval(fetchParticipants, 5000); // Обновляем список участников каждые 5 секунд
+    const interval = setInterval(fetchParticipants, 500); // Обновляем список участников каждые 5 секунд
 
     // Очистка интервала при размонтировании компонента
     return () => clearInterval(interval);
   }, [name]); // Запускаем только при изменении имени комнаты
 
   useEffect(() => {
-    if (remainingTime > 0) {
+    if (quizStarted && remainingTime > 0) {
       const timer = setTimeout(() => setRemainingTime(remainingTime - 1), 1000);
       return () => clearTimeout(timer);
     }
-  }, [remainingTime]);
+  }, [quizStarted, remainingTime]);
+
+  const startQuiz = () => {
+    setQuizStarted(true);
+    setQuestion({
+      text: 'Какой год был основан React?',
+      options: ['2010', '2013', '2015', '2018'],
+      timer: 10, // Время на ответ (в секундах)
+    });
+    setRemainingTime(10);
+  };
 
   const handleNextQuestion = () => {
     setQuestion({
@@ -68,20 +78,32 @@ const RoomPage = () => {
         </ul>
       </div>
 
-      <div className="quiz-section">
-        <h2>Вопрос:</h2>
-        <p>{question.text}</p>
-        <div className="timer">Осталось времени: {remainingTime} секунд</div>
-        <div className="options">
-          {question.options.map((option, index) => (
-            <button key={index} className="option-button">
-              {option}
-            </button>
-          ))}
+      {!quizStarted ? (
+        <div className="instructions">
+          <p>Добро пожаловать в викторину! Нажмите кнопку "СТАРТ", чтобы начать.</p>
         </div>
-      </div>
+      ) : (
+        <div className="quiz-section">
+          <h2>Вопрос:</h2>
+          <p>{question.text}</p>
+          <div className="timer">Осталось времени: {remainingTime} секунд</div>
+          <div className="options">
+            {question.options.map((option, index) => (
+              <button key={index} className="option-button">
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {remainingTime === 0 && (
+      {!quizStarted && hasFetched && ( // Показываем кнопку старта только после загрузки участников
+        <button className="start-button" onClick={startQuiz}>
+          СТАРТ
+        </button>
+      )}
+
+      {remainingTime === 0 && quizStarted && (
         <button className="next-question-button" onClick={handleNextQuestion}>
           Следующий вопрос
         </button>
