@@ -75,16 +75,35 @@ const MainPage = () => {
     setShowCreateRoom(true);
   };
 
+  const handleSubmitRoom = (e) => {
+    e.preventDefault();
+    console.log("Данные комнаты при отправке:", roomDetails); // Логирование данных перед отправкой
+    // Закрытие формы
+    setShowCreateRoom(false);
+    // Отправка данных на сервер
+    fetch('/api/create-room', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(roomDetails),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Комната создана:', data);
+        // Логика при успешном создании комнаты
+      })
+      .catch((error) => {
+        console.error('Ошибка при создании комнаты:', error);
+      });
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setRoomDetails({ ...roomDetails, [name]: value });
   };
 
-  const handleSubmitRoom = (e) => {
-    e.preventDefault();
-    addNewRoom(roomDetails);
-    setShowCreateRoom(false);
-  };
+
 
   return (
     <div className="main-page">
