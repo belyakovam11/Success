@@ -21,8 +21,15 @@ def join_room(request):
             if current_player_count >= room.player_count:
                 return JsonResponse({'error': 'Лимит игроков в комнате исчерпан'}, status=400)
 
+            # Извлекаем user-agent
+            user_agent = request.headers.get('User-Agent', 'Unknown')
+
             # Добавление пользователя в комнату
-            participant, created = RoomParticipant.objects.get_or_create(user=username, room=room)
+            participant, created = RoomParticipant.objects.get_or_create(
+                user=username, 
+                room=room,
+                defaults={'user_agent': user_agent}
+            )
 
             return JsonResponse({'message': f'Вы присоединились к комнате {room_name}', 'roomId': room.id, 'userId': username})
         except Exception as e:

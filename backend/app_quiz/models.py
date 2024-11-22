@@ -20,9 +20,10 @@ class RoomParticipant(models.Model):
     user = models.CharField(max_length=100)  # Вместо ForeignKey можно использовать строку для идентификации пользователя
     room = models.ForeignKey(Room, related_name='participants', on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
+    user_agent = models.CharField(max_length=255)  # Поле для сохранения user-agent
 
     class Meta:
-        unique_together = ('user', 'room')
+        unique_together = ('user', 'room', 'user_agent')
 
     def __str__(self):
         return f'{self.user} in {self.room.name}'
