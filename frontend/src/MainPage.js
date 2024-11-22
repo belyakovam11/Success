@@ -98,8 +98,8 @@ const MainPage = () => {
 
       if (response.ok) {
         addNewRoom(data); // Добавляем новую комнату
-        // После успешного создания комнаты перенаправляем на нее
-        navigate(`/room/${data.name}`); // Переход в созданную комнату
+        setToastMessage('Комната успешно создана!');
+        setTimeout(() => setToastMessage(''), 1000);
       } else {
         setToastMessage(data.error || 'Ошибка при создании комнаты');
       }
@@ -118,6 +118,12 @@ const MainPage = () => {
   useEffect(() => {
     fetchUsername();
     fetchAvailableRooms();
+
+    // Обновляем список комнат каждые 0.5 секунд
+    const intervalId = setInterval(fetchAvailableRooms, 500);
+
+    // Очистка интервала при размонтировании компонента
+    return () => clearInterval(intervalId);
   }, [username]);
 
   return (
