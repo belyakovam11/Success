@@ -203,7 +203,7 @@ const MainPage = () => {
               <input
                 type="number"
                 name="playerCount"
-                placeholder="Количество игроков"
+                placeholder="Количество вопросов"
                 value={roomDetails.playerCount}
                 onChange={handleInputChange}
                 required
