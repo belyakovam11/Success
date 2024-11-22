@@ -69,12 +69,45 @@ const RoomPage = () => {
   };
 
 
+  const submitAnswer = (answer) => {
+    fetch(`/api/room/${name}/submit-answer/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': navigator.userAgent,
+      },
+      body: JSON.stringify({ answer }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Ответ отправлен:", data);
+        if (data.is_correct) {
+          alert(`Правильно! Количество правильных ответов: ${data.correct_answers_count}`);
+        } else {
+          alert(`Неправильно! Количество правильных ответов: ${data.correct_answers_count}`);
+        }
+
+        // Переход к следующему вопросу
+        if (data.next_question) {
+          handleNextQuestion();
+        } else {
+          alert("Викторина завершена!");
+        }
+      })
+      .catch((error) => console.error('Ошибка отправки ответа:', error));
+  };
+
   const handleNextQuestion = () => {
     if (currentQuestionIndex + 1 < questions.length) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setRemainingTime(questions[currentQuestionIndex + 1].answer_time);
+    } else {
+      // Если вопросов больше нет, заканчиваем викторину
+      alert("Викторина завершена!");
+      setQuizStarted(false);
     }
   };
+
 
   return (
     <div className="room-page">
@@ -100,9 +133,14 @@ const RoomPage = () => {
           <div className="timer">Осталось времени: {remainingTime} секунд</div>
           <div className="options">
             {questions[currentQuestionIndex]?.options.map((option, index) => (
-              <button key={index} className="option-button">
+              <button
+                key={index}
+                className="option-button"
+                onClick={() => submitAnswer(option)}
+              >
                 {option}
               </button>
+
             ))
             }
           </div>
