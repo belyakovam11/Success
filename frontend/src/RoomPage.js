@@ -12,6 +12,7 @@ const RoomPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Индекс текущего вопроса
   const [remainingTime, setRemainingTime] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
+  const [quizEnded, setQuizEnded] = useState(false); // Флаг завершения викторины
 
   useEffect(() => {
     if (!name) return;
@@ -55,7 +56,6 @@ const RoomPage = () => {
     }
   }, [name]);
 
-
   useEffect(() => {
     if (quizStarted && remainingTime > 0) {
       const timer = setTimeout(() => setRemainingTime(remainingTime - 1), 1000);
@@ -67,7 +67,6 @@ const RoomPage = () => {
     setQuizStarted(true);
     setRemainingTime(10); // Устанавливаем время на ответ из первого вопроса
   };
-
 
   const submitAnswer = (answer) => {
     fetch(`/api/room/${name}/submit-answer/`, {
@@ -87,11 +86,12 @@ const RoomPage = () => {
           alert(`Неправильно! Количество правильных ответов: ${data.correct_answers_count}`);
         }
 
-        // Переход к следующему вопросу
+        // Переход к следующему вопросу или завершение викторины
         if (data.next_question) {
           handleNextQuestion();
         } else {
           alert("Викторина завершена!");
+          setQuizEnded(true); // Устанавливаем флаг завершения викторины
         }
       })
       .catch((error) => console.error('Ошибка отправки ответа:', error));
@@ -104,10 +104,10 @@ const RoomPage = () => {
     } else {
       // Если вопросов больше нет, заканчиваем викторину
       alert("Викторина завершена!");
+      setQuizEnded(true); // Устанавливаем флаг завершения викторины
       setQuizStarted(false);
     }
   };
-
 
   return (
     <div className="room-page">
@@ -139,19 +139,22 @@ const RoomPage = () => {
               >
                 {option}
               </button>
-
-            ))
-            }
+            ))}
           </div>
         </div>
       )}
 
-      {!quizStarted && hasFetched && (
+      {!quizStarted && hasFetched && !quizEnded && (
         <button className="start-button" onClick={startQuiz}>
           СТАРТ
         </button>
       )}
 
+      {quizEnded && (
+        <button className="exit-button" onClick={() => window.location.href = '/main'}>
+          ВЫЙТИ
+        </button>
+      )}
     </div>
   );
 };
