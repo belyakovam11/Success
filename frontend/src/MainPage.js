@@ -11,7 +11,7 @@ const MainPage = () => {
     name: '',
     playerCount: '',
     theme: '',
-    answerTime: '',
+    answerTime: '10',
   });
   const [selectedRoom, setSelectedRoom] = useState(null);
   const navigate = useNavigate(); // Для навигации
@@ -221,14 +221,6 @@ const MainPage = () => {
                 <option value="История">История</option>
               </select>
 
-              <input
-                type="number"
-                name="answerTime"
-                placeholder="Время ответа (в секундах)"
-                value={roomDetails.answerTime}
-                onChange={handleInputChange}
-                required
-              />
               <button type="submit">Создать комнату</button>
               <button type="button" onClick={() => setShowCreateRoom(false)}>
                 Отмена

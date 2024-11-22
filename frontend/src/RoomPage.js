@@ -130,7 +130,6 @@ const RoomPage = () => {
         <div className="quiz-section">
           <h2>Вопрос:</h2>
           <p>{questions[currentQuestionIndex]?.text}</p>
-          <div className="timer">Осталось времени: {remainingTime} секунд</div>
           <div className="options">
             {questions[currentQuestionIndex]?.options.map((option, index) => (
               <button
@@ -153,11 +152,6 @@ const RoomPage = () => {
         </button>
       )}
 
-      {remainingTime === 0 && quizStarted && (
-        <button className="next-question-button" onClick={handleNextQuestion}>
-          Следующий вопрос
-        </button>
-      )}
     </div>
   );
 };
