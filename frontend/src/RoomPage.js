@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import './RoomPage.css';
 
 const RoomPage = () => {
-  const { name } = useParams(); 
+  const { name } = useParams();
   const [users, setUsers] = useState([]);
-  const [questions, setQuestions] = useState([]); 
-  const [quizStarted, setQuizStarted] = useState(false); 
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); 
+  const [questions, setQuestions] = useState([]);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [remainingTime, setRemainingTime] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
-  const [quizEnded, setQuizEnded] = useState(false); 
+  const [quizEnded, setQuizEnded] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // Track selected answer
   const [answerCorrect, setAnswerCorrect] = useState(null); // Store correctness of the answer
   const [score, setScore] = useState(0); // Track score
@@ -127,13 +127,12 @@ const RoomPage = () => {
             {questions[currentQuestionIndex]?.options.map((option, index) => (
               <button
                 key={index}
-                className={`option-button ${
-                  selectedAnswer === option
-                    ? answerCorrect
-                      ? 'correct'
-                      : 'incorrect'
-                    : ''
-                }`}
+                className={`option-button ${selectedAnswer === option
+                  ? answerCorrect
+                    ? 'correct'
+                    : 'incorrect'
+                  : ''
+                  }`}
                 onClick={() => submitAnswer(option)}
               >
                 {option}
