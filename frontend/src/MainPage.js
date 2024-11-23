@@ -16,6 +16,8 @@ const MainPage = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const navigate = useNavigate(); // Для навигации
 
+  const themes = ['Спорт', 'История'];
+
   // Получение имени пользователя
   const fetchUsername = async () => {
     try {
@@ -75,6 +77,41 @@ const MainPage = () => {
     } catch (error) {
       console.error('Ошибка при подключении к комнате:', error);
       setToastMessage('Ошибка при подключении к комнате');
+    }
+  };
+
+  // Функция для создания случайной комнаты (Быстрая игра)
+  const startQuickGame = async () => {
+    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+    const randomPlayerCount = Math.floor(Math.random() * 20) + 1;
+    const randomName = `Random ${randomTheme} ${Math.floor(Math.random() * 900) + 100}`;
+
+    const randomRoomDetails = {
+      name: randomName,
+      playerCount: randomPlayerCount,
+      theme: randomTheme,
+      answerTime: '10',
+    };
+
+    try {
+      const response = await fetch('/api/create-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(randomRoomDetails),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        addNewRoom(data); // Добавляем новую комнату
+      } else {
+        setToastMessage(data.error || 'Ошибка при создании комнаты');
+      }
+    } catch (error) {
+      console.error('Ошибка при создании комнаты:', error);
+      setToastMessage('Ошибка при создании комнаты');
     }
   };
 
@@ -156,39 +193,15 @@ const MainPage = () => {
         )}
       </div>
 
-      {/* Модальное окно с деталями выбранной комнаты */}
-      {selectedRoom && (
-        <div className="modal-overlay active">
-          <div className="selected-room-card">
-            <h3>Информация о комнате</h3>
-            <p>
-              <strong>Тема викторины:</strong> {selectedRoom.theme}
-            </p>
-            <p>
-              <strong>Время ответа на вопрос:</strong> {selectedRoom.answerTime}
-            </p>
-            <p>
-              <strong>Количество свободных мест:</strong> {selectedRoom.freeSpaces}
-            </p>
-            <button
-              className="join-room-button"
-              onClick={() => navigate(`/room/${selectedRoom.name}`)} // Переход в комнату
-            >
-              Подключиться к комнате
-            </button>
-            <button className="back-button" onClick={() => setSelectedRoom(null)}>
-              Назад
-            </button>
-          </div>
-        </div>
-      )}
-
       {toastMessage && (
         <div className="toast">
           {toastMessage}
         </div>
       )}
 
+      <button className="quick-game-button" onClick={startQuickGame}>
+        Быстрая игра
+      </button>
       <button className="create-room-button" onClick={handleCreateRoom}>
         Создать комнату
       </button>

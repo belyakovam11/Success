@@ -10,7 +10,7 @@ def get_room_questions(request, room_name):
         question_limit = room.player_count
         
         # Фильтруем вопросы по теме комнаты и ограничиваем их количеством из player_count
-        questions = Question.objects.filter(theme=room.theme)[:question_limit]
+        questions = Question.objects.filter(theme=room.theme).order_by('?')[:question_limit]
         
         # Формируем данные для ответа
         question_data = [
