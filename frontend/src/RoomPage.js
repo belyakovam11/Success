@@ -1,55 +1,47 @@
-// RoomPage.js
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './RoomPage.css';
 
 const RoomPage = () => {
-  const { name } = useParams(); // Получаем параметр "name" из URL
+  const { name } = useParams(); 
   const [users, setUsers] = useState([]);
-  const [questions, setQuestions] = useState([]); // Храним вопросы
-  const [quizStarted, setQuizStarted] = useState(false); // Флаг для отслеживания старта викторины
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Индекс текущего вопроса
+  const [questions, setQuestions] = useState([]); 
+  const [quizStarted, setQuizStarted] = useState(false); 
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); 
   const [remainingTime, setRemainingTime] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
-  const [quizEnded, setQuizEnded] = useState(false); // Флаг завершения викторины
+  const [quizEnded, setQuizEnded] = useState(false); 
+  const [selectedAnswer, setSelectedAnswer] = useState(null); // Track selected answer
+  const [answerCorrect, setAnswerCorrect] = useState(null); // Store correctness of the answer
+  const [score, setScore] = useState(0); // Track score
+  const [startTime, setStartTime] = useState(null); // Track start time
+  const [endTime, setEndTime] = useState(null); // Track end time
+  const [showModal, setShowModal] = useState(false); // To show modal with results
 
   useEffect(() => {
     if (!name) return;
 
     const fetchParticipants = () => {
       fetch(`/api/room/${name}/participants/`)
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            throw new Error('Не удалось загрузить участников');
-          }
-        })
+        .then((response) => response.json())
         .then((data) => {
           setUsers(data);
-          setHasFetched(true); // Устанавливаем флаг, когда данные загружены
+          setHasFetched(true);
         })
         .catch((error) => console.error('Ошибка загрузки участников:', error));
     };
 
-    // Загружаем участников при первом рендере
     fetchParticipants();
+    const interval = setInterval(fetchParticipants, 500);
 
-    // Устанавливаем периодическую проверку данных
-    const interval = setInterval(fetchParticipants, 500); // Обновляем список участников каждые 5 секунд
-
-    // Очистка интервала при размонтировании компонента
     return () => clearInterval(interval);
-  }, [name]); // Запускаем только при изменении имени комнаты
+  }, [name]);
 
   useEffect(() => {
     if (name) {
-      // Загружаем вопросы при монтировании компонента
       fetch(`/api/room/${name}/questions/`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("Загруженные вопросы:", data); // Выводим все загруженные вопросы в консоль
           setQuestions(data);
         })
         .catch((error) => console.error('Ошибка загрузки вопросов:', error));
@@ -57,56 +49,57 @@ const RoomPage = () => {
   }, [name]);
 
   useEffect(() => {
-    if (quizStarted && remainingTime > 0) {
+    if (quizStarted && remainingTime > 0 && !quizEnded) {
       const timer = setTimeout(() => setRemainingTime(remainingTime - 1), 1000);
       return () => clearTimeout(timer);
     }
-  }, [quizStarted, remainingTime]);
+  }, [quizStarted, remainingTime, quizEnded]);
 
   const startQuiz = () => {
     setQuizStarted(true);
-    setRemainingTime(10); // Устанавливаем время на ответ из первого вопроса
+    setRemainingTime(10); // Set initial time for first question
+    setStartTime(new Date()); // Record the start time of the quiz
   };
 
   const submitAnswer = (answer) => {
-    fetch(`/api/room/${name}/submit-answer/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': navigator.userAgent,
-      },
-      body: JSON.stringify({ answer }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Ответ отправлен:", data);
-        if (data.is_correct) {
-          alert(`Правильно! Количество правильных ответов: ${data.correct_answers_count}`);
-        } else {
-          alert(`Неправильно! Количество правильных ответов: ${data.correct_answers_count}`);
-        }
+    setSelectedAnswer(answer);
+    const correct = answer === questions[currentQuestionIndex].correct_answer;
+    setAnswerCorrect(correct);
 
-        // Переход к следующему вопросу или завершение викторины
-        if (data.next_question) {
-          handleNextQuestion();
-        } else {
-          alert("Викторина завершена!");
-          setQuizEnded(true); // Устанавливаем флаг завершения викторины
-        }
-      })
-      .catch((error) => console.error('Ошибка отправки ответа:', error));
+    if (correct) {
+      setScore(prevScore => prevScore + 1); // Increase score for correct answers
+    }
+
+    // Reduced the delay to 500 milliseconds (0.5 seconds)
+    setTimeout(() => {
+      handleNextQuestion();
+    }, 500); // Faster transition between questions
   };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex + 1 < questions.length) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setRemainingTime(questions[currentQuestionIndex + 1].answer_time);
+      setSelectedAnswer(null);
+      setAnswerCorrect(null);
     } else {
-      // Если вопросов больше нет, заканчиваем викторину
-      alert("Викторина завершена!");
-      setQuizEnded(true); // Устанавливаем флаг завершения викторины
+      // Stop the timer when the quiz ends
+      setQuizEnded(true);
+      setEndTime(new Date()); // Record end time when quiz finishes
       setQuizStarted(false);
+      setShowModal(true); // Show results modal when quiz ends
     }
+  };
+
+  const closeModal = () => setShowModal(false);
+
+  // Calculate time spent in seconds
+  const getElapsedTime = () => {
+    if (startTime && endTime) {
+      const timeSpent = Math.floor((endTime - startTime) / 1000); // in seconds
+      return timeSpent;
+    }
+    return 0;
   };
 
   return (
@@ -134,7 +127,13 @@ const RoomPage = () => {
             {questions[currentQuestionIndex]?.options.map((option, index) => (
               <button
                 key={index}
-                className="option-button"
+                className={`option-button ${
+                  selectedAnswer === option
+                    ? answerCorrect
+                      ? 'correct'
+                      : 'incorrect'
+                    : ''
+                }`}
                 onClick={() => submitAnswer(option)}
               >
                 {option}
@@ -154,6 +153,26 @@ const RoomPage = () => {
         <button className="exit-button" onClick={() => window.location.href = '/main'}>
           ВЫЙТИ
         </button>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Результаты</h2>
+            <p>Ваши баллы: {score}</p>
+            <p>Количество правильных ответов: {score}</p>
+            <p>Время выполнения: {getElapsedTime()} секунд</p>
+            <h3>Список вопросов и правильных ответов:</h3>
+            <ul>
+              {questions.map((question, index) => (
+                <li key={index}>
+                  {question.text} — Правильный ответ: {question.correct_answer}
+                </li>
+              ))}
+            </ul>
+            <button className="exit-button" onClick={() => window.location.href = '/main'}>Закрыть</button>
+          </div>
+        </div>
       )}
     </div>
   );
