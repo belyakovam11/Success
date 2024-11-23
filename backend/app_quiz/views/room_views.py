@@ -19,7 +19,7 @@ def join_room(request):
             # Проверка лимита игроков
             current_player_count = room.participants.count()
             if current_player_count >= room.player_count:
-                return JsonResponse({'error': 'Лимит игроков в комнате исчерпан'}, status=400)
+                return JsonResponse({'error': 'Слишком много вопрсов заданно'}, status=400)
 
             # Извлекаем user-agent
             user_agent = request.headers.get('User-Agent', 'Unknown')
