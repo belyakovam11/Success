@@ -23,9 +23,26 @@ const MainPage = () => {
     try {
       const response = await fetch('/get-username/');
       const data = await response.json();
-      setUsername(data.username);
+
+      const storedUsername = localStorage.getItem('username');
+
+      if (storedUsername && storedUsername !== data.username) {
+        // Если username отличается, используем значение из localStorage
+        console.warn(
+          `Username из API (${data.username}) отличается от localStorage (${storedUsername}). Используем значение из localStorage.`
+        );
+        setUsername(storedUsername);
+      } else {
+        setUsername(data.username);
+        // Обновляем localStorage, если username совпадает
+        localStorage.setItem('username', data.username);
+      }
     } catch (error) {
       console.error('Ошибка при получении имени пользователя:', error);
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        setUsername(storedUsername); // Используем значение из localStorage, если запрос не удался
+      }
     }
   };
 
