@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate для редиректа
-import './MainPage.css';
+import './components/MainPage.css';
 
 const MainPage = () => {
   const [username, setUsername] = useState('');

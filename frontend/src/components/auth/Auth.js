@@ -1,7 +1,7 @@
 // Auth.js
 import React, { useState } from 'react';
-import Register from './Register'; // Импортируем компонент регистрации
-import Login from './Login'; // Импортируем компонент входа
+import Register from './register/Register'; // Импортируем компонент регистрации
+import Login from './login/Login'; // Исправленный путь
 import './Auth.css';
 
 const Auth = () => {

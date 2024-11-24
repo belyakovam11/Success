@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './RoomPage.css';
+import './components/RoomPage.css';
 
 const RoomPage = () => {
   const { name } = useParams();

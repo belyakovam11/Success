@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-image: url('your-image-path.jpg');
+  background-image: none;
   background-size: cover;
   background-position: center;
 }
