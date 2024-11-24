@@ -1,0 +1,67 @@
+Запуск команд
+
+Питон 
+Запускаем виртуальное окружении (внимательно на директорию, при написании ls в терминале должны быть папки фронт бек компоуз если нет смотрим как в Докер Компоузе перейти в другую дир)
+.\env\Scripts\activate
+
+Запуск компоуза
+docker-compose up --build
+
+удалить все образы
+docker rmi -f $(docker images -q)
+
+КАК ЗАПУСТИТЬ ТЕСТ (ДЕЛАЕМ ОТДЕЛЬНУЮ КОНСОЛЬ ЗАХОДИМ В БЕК И ПИШЕМ КОМАНДУ ДЛЯ ТЕСТОВ ВСЕ НИЖЕ)
+подключение к контейнеру с БЕКЕНД
+docker exec -it success-backend-1 /bin/bash
+Команда для pytest
+DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py
+
+ЕСЛИ ВЫ КРАЙНЕ ЛЕНИВЫЙ ЧЕЛОВЕК ОДНОЙ КОМАНДОЙ ЗАПУСКАЕМ ТЕСТ
+docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py"
+
+
+python manage.py makemigrations
+
+
+РАБОТА С БД (КОнтейнер посеграсса) ЧЕРЕЗ коносль
+Пишем в новом терминале команду после запуска (она ниже) 
+docker exec -it success-db-1 psql -U django
+
+SELECT * FROM app_quiz_customuser;
+SELECT * FROM app_quiz_room;
+SELECT * FROM app_quiz_roomparticipant;
+SELECT * FROM app_quiz_question;
+
+
+ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ
+\l
+\c django
+
+Запускаем в той же директории где и файл .yml (Смотрим через ls в терминале если видим Success а не кучу файлов пишем cd Success и потом опять пишем команду)
+
+Сервисы для работы
+
+Pgadmin http://localhost:5050
+login=admin@admin.com
+PASSWORD=admin
+
+Rabbit http://localhost:15672
+login=guest
+PASSWORD=guest
+
+Swagger http://localhost:8081/
+
+MiniO http://localhost:9001
+login=minio-image
+ASSWORD=minio-image-pass
+
+MONGO http://localhost:27017/
+
+Redis http://localhost:6379/
+
+Backend(Django) http://localhost:5000/
+
+Frontend(React) http://localhost:3000/
+
+Nginx http://localhost/
+

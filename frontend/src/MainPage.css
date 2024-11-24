@@ -1,0 +1,232 @@
+.main-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 2px solid #6a679e;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #6a679e;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.player-card h2 {
+  font-size: 1.5rem;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.player-card p {
+  font-size: 1rem;
+  color: #555555;
+  margin: 5px 0;
+}
+
+.room-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.room-card {
+  padding: 15px;
+  background-color: #6a679e;
+  color: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.room-card:hover {
+  background-color: #5d54a4;
+}
+
+.selected-room-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 30px;
+  border: 2px solid #6a679e;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  z-index: 100;
+}
+
+.selected-room-card h3 {
+  text-align: center;
+  color: #333333;
+}
+
+.selected-room-card p {
+  color: #555555;
+  margin-bottom: 10px;
+}
+
+.selected-room-card button {
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: #6a679e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.selected-room-card button:hover {
+  background-color: #5d54a4;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #6a679e;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+select:focus {
+  border-color: #5d54a4;
+  box-shadow: 0 0 5px rgba(93, 84, 164, 0.5);
+  outline: none;
+}
+
+option {
+  padding: 10px;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border: 2px solid #6a679e;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 300px;
+}
+
+.modal-content h2 {
+  text-align: center;
+  color: #333333;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #6a679e;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background-color: #6a679e;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+  background-color: #5d54a4;
+}
+
+.create-room-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-room-button:hover {
+  background-color: #d32f2f;
+}
+
+.back-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #d32f2f;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #c62828;
+}
+
+.quick-game-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  /* Зеленый цвет для позитивного действия */
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quick-game-button:hover {
+  background-color: #388e3c;
+  /* Более темный оттенок зеленого при наведении */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Легкая тень при наведении */
+}
+
+.quick-game-button:active {
+  background-color: #2e7d32;
+  /* Еще более темный оттенок при нажатии */
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
+  /* Эффект нажатия */
+}

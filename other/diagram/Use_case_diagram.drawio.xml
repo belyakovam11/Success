@@ -1,0 +1,48 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 YaBrowser/24.7.0.0 Safari/537.36" version="24.7.14">
+  <diagram name="Страница — 1" id="1Xg4T9kb0zswJlPcoeQe">
+    <mxGraphModel dx="724" dy="380" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="BD0e2qHh8kltjeqJZBgL-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="BD0e2qHh8kltjeqJZBgL-6" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="220" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="BD0e2qHh8kltjeqJZBgL-6" target="BD0e2qHh8kltjeqJZBgL-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BD0e2qHh8kltjeqJZBgL-6" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;Создание комнаты&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="200" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="BD0e2qHh8kltjeqJZBgL-12" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;Игра&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="290" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="BD0e2qHh8kltjeqJZBgL-20" target="BD0e2qHh8kltjeqJZBgL-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BD0e2qHh8kltjeqJZBgL-20" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;Создатель комнаты&lt;/font&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="330" y="200" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="BD0e2qHh8kltjeqJZBgL-24" target="BD0e2qHh8kltjeqJZBgL-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BD0e2qHh8kltjeqJZBgL-24" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;Игрок&lt;/font&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="330" y="290" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--6" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;Выбирает тематику, количество игроков, название, таймер и ставит/не ставит пароль&lt;/font&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=18;align=left;" vertex="1" parent="1">
+          <mxGeometry x="550" y="187.5" width="100" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="BD0e2qHh8kltjeqJZBgL-6" target="h4WxBwgvMtSuxkU2AIh--6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--14" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;Могут выбрать комнату, отвечать на вопросы и влиять на результаты игры&lt;/font&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=18;align=left;" vertex="1" parent="1">
+          <mxGeometry x="545" y="277.5" width="110" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="h4WxBwgvMtSuxkU2AIh--15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="BD0e2qHh8kltjeqJZBgL-12" target="h4WxBwgvMtSuxkU2AIh--14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

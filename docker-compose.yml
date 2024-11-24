@@ -1,0 +1,155 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SESSION_ENGINE=django.contrib.sessions.backends.cache
+      - SESSION_CACHE_ALIAS=default
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=django
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+    depends_on:
+      - db
+      - rabbitmq
+      - redis
+      # - mongo
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+    #   PGDATA: /data/postgres
+    # volumes:
+    #   - postgres_data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "django" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+  #     - PGADMIN_DEFAULT_PASSWORD=admin
+  #     - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False # Отключение ENHANCED_COOKIE_PROTECTION
+  #   volumes:
+  #     - pgadmin:/root/.pgadmin
+  #   ports:
+  #     - "5050:80"
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  # mongo:
+  #   image: mongo:latest
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   networks:
+  #     - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+  # minio:
+  #   container_name: minio
+  #   image: "minio/minio:latest"
+  #   volumes:
+  #     - ./Storage/minio/storage:/data
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   environment:
+  #     - MINIO_ROOT_USER=minio-image
+  #     - MINIO_ROOT_PASSWORD=minio-image-pass
+  #   command: minio server /data --console-address :9001
+  #   networks:
+  #     - app-network
+  # swagger-ui:
+  #   image: swaggerapi/swagger-ui
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SWAGGER_JSON=/app/swagger.json
+  #   volumes:
+  #     - ./backend:/app
+  #   networks:
+  #     - app-network
+
+  # swagger-editor:
+  #   image: swaggerapi/swagger-editor
+  #   ports:
+  #     - "8081:8080"
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+
+
+volumes:
+  postgres_data:
+    # mongo_data:
+    # minio_data:
+    # pgadmin:

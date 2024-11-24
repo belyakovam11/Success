@@ -1,0 +1,98 @@
+/* Auth.css */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f6f5f7; /* Светлый фон страницы */
+}
+
+.auth-container {
+  background-color: #ffffff; /* Белый фон контейнера */
+  padding: 20px; /* Отступы внутри контейнера */
+  border-radius: 10px; /* Закругленные углы */
+  box-shadow: 0px 0px 24px #5c5696; /* Тень контейнера */
+  width: 400px; /* Ширина контейнера */
+}
+
+.toggle-buttons {
+  display: flex; /* Горизонтальное расположение кнопок */
+  justify-content: center; /* Центрирование кнопок */
+  margin-bottom: 20px; /* Отступ снизу */
+}
+
+.toggle-button {
+  flex: 1; /* Занимает доступное пространство */
+  padding: 10px 20px; /* Отступы внутри кнопки */
+  font-size: 16px; /* Размер шрифта */
+  font-weight: bold; /* Жирный шрифт */
+  border: none; /* Без границ */
+  cursor: pointer; /* Курсор при наведении */
+  transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+  border-radius: 5px; /* Скругление кнопок */
+}
+
+.toggle-button.active {
+  background-color: #5d54a4; /* Цвет фона для активной кнопки */
+  color: white; /* Цвет текста для активной кнопки */
+}
+
+.toggle-button:not(.active) {
+  background-color: #e0e0e0; /* Цвет фона для неактивной кнопки */
+}
+
+.auth-form {
+  display: flex; /* Вертикальное расположение полей ввода */
+  flex-direction: column; /* Вертикальная ориентация */
+  align-items: center; /* Центрирование по горизонтали */
+}
+
+.auth-field {
+  margin-bottom: 15px; /* Отступ между полями ввода */
+  text-align: left; /* Выравнивание текста слева */
+  width: 100%; /* Занимает полную ширину контейнера */
+}
+
+.auth-field label {
+  display: block; /* Блоковое отображение метки */
+  margin-bottom: 5px; /* Отступ снизу метки */
+  font-size: 14px; /* Размер шрифта для меток */
+  color: #5d54a4; /* Цвет меток */
+}
+
+.auth-field input {
+  width: 100%; /* Ширина полей ввода */
+  padding: 10px; /* Отступы внутри поля ввода */
+  font-size: 16px; /* Размер шрифта */
+  border: 1px solid #ccd1d9; /* Светлый оттенок для границ */
+  border-radius: 5px; /* Закругленные углы для полей ввода */
+  color: #333; /* Цвет текста в поле ввода */
+  background-color: #f9f9f9; /* Светлый фон для полей ввода */
+}
+
+.auth-field input:focus {
+  border-color: #5d54a4; /* Цвет границы при фокусе */
+  outline: none; /* Убираем стандартное обрамление */
+}
+
+.submit-button {
+  padding: 10px; /* Отступы внутри кнопки отправки */
+  font-size: 16px; /* Размер шрифта */
+  color: #ffffff; /* Цвет текста */
+  background-color: #5d54a4; /* Основной цвет кнопки */
+  border: none; /* Без границ */
+  border-radius: 5px; /* Закругленные углы кнопки */
+  cursor: pointer; /* Курсор при наведении */
+  transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+  width: 100%; /* Занимает полную ширину контейнера */
+}
+
+.submit-button:hover {
+  background-color: #4c4683; /* Темный оттенок при наведении */
+}
+
+.message {
+  margin-top: 10px; /* Отступ сверху для сообщения */
+  font-size: 14px; /* Размер шрифта для сообщения */
+  color: #5d54a4; /* Основной цвет для сообщений */
+}

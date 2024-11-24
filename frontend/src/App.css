@@ -1,0 +1,51 @@
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.auth-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Растягиваем контейнер на всю ширину */
+  max-width: 400px; /* Ограничиваем максимальную ширину, чтобы форма не была слишком широкой */
+}
+
+.login-form, .register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  margin-bottom: 5px;
+}
+
+form input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%; /* Поля ввода занимают всю ширину контейнера */
+  box-sizing: border-box; /* Учитываем отступы и границы в ширине */
+}
+
+form button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%; /* Кнопка тоже занимает всю ширину */
+}
+
+/* Дополнительные стили для адаптивности */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 10px; /* Уменьшаем отступы на маленьких экранах */
+  }
+}
