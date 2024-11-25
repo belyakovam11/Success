@@ -4,18 +4,18 @@ on:
   push:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
   pull_request:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
 
 jobs:
-  test-backendend:
+  test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
+    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main'  # Запускается только для веток backend и main
 
     services:
       db:
@@ -61,19 +61,19 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}/${{ secrets.DB_NAME }}
+          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}
         run: |
           python backend/manage.py migrate
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost/${{ secrets.DB_NAME }}
+          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}
         run: |
           python backend/manage.py test
 
   test-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
+    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main'  # Запускается только для веток frontend и main
 
     steps:
       - name: Checkout code
