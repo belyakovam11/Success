@@ -17,23 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
 
-    services:
-      db:
-        image: postgres:13
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        options: >-
-          --health-cmd="pg_isready --host=db --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-        ports:
-          - 5432:5432
-        volumes:
-          - /var/lib/postgresql/data
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -52,22 +35,15 @@ jobs:
         run: |
           cp .env.example .env
 
-      - name: Wait for Postgres
-        run: |
-          until pg_isready --host=${{ secrets.DB_HOST }} --port=${{ secrets.DB_PORT }} --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}; do
-            echo "Waiting for Postgres...";
-            sleep 5;
-          done
-
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}/${{ secrets.DB_NAME }}
+          DATABASE_URL: postgres://django:django@localhost/django
         run: |
           python backend/manage.py migrate
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost/${{ secrets.DB_NAME }}
+          DATABASE_URL: postgres://django:django@localhost/django
         run: |
           python backend/manage.py test
 
