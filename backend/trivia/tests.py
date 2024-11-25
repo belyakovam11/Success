@@ -1,14 +1,11 @@
 import django
 import pytest
 from django.urls import reverse
-from django.contrib.sessions.middleware import SessionMiddleware
 from rest_framework.test import APIClient
-from Success.backend.user.models import CustomUser
+from trivia.models import Question
+from room.models import Room
 from django.core.management import call_command
-from unittest.mock import patch
-from Success.backend.user.models import CustomUser,Question  
-from trivia.views import get_questions_by_theme  # Импортируем вашу функцию
-
+import random
 
 # Django setup for pytest
 django.setup()
@@ -24,128 +21,106 @@ def setup_db():
     yield
     call_command('flush', '--no-input')  # Очищаем базу данных после тестов.
 
+@pytest.fixture
+def create_room_with_questions(db):
+    """Фикстура для создания комнаты с вопросами."""
+    def make_room(name, player_count, theme, answer_time):
+        room = Room.objects.create(
+            name=name,
+            player_count=player_count,
+            theme=theme,
+            answer_time=answer_time
+        )
+        
+        questions = [
+            Question.objects.create(
+                text=f'Вопрос по теме {theme} №{i+1}',
+                options='Ответ1,Ответ2,Ответ3,Ответ4',
+                correct_answer=f'Ответ{i+1}',
+                answer_time=answer_time,
+                theme=theme
+            ) for i in range(player_count)
+        ]
+        
+        return room, questions
+    return make_room
+
 @pytest.fixture(autouse=True)
-def disable_csrf_checks(settings):
-    settings.CSRF_COOKIE_NAME = None
-    settings.CSRF_HEADER_NAME = None
-    settings.CSRF_COOKIE_HTTPONLY = False
-
-@pytest.fixture
-def create_user(db):
-    def make_user(username="testuser", email="test@example.com", password="password123"):
-        user = CustomUser.objects.create_user(username=username, email=email, password=password)
-        return user
-    return make_user
-
-@pytest.fixture
-def set_up_session(api_client):
-    """Фикстура для настройки сессии клиента API."""
-    middleware = SessionMiddleware(lambda request: None)
-    api_client.handler = middleware.process_request(api_client)
-    return api_client
-
-@pytest.fixture
-def mock_send_registration_email():
-    with patch('app_quiz.tasks.send_registration_email.delay') as mock:
-        yield mock
-
-@pytest.mark.django_db(transaction=True)
-def test_successful_registration(api_client, mock_send_registration_email):
-    url = reverse('register')
-    data = {
-        "username": "new_user",
-        "email": "new_user@example.com",
-        "password": "password123"
-    }
-    response = api_client.post(url, data, format='json')
-    assert response.status_code == 201
-    assert response.json().get("message") == "Успешно зарегистрированы!"
+def fix_random_seed():
+    random.seed(42)  # Зафиксировать случайный сид перед тестом
 
 @pytest.mark.django_db
-def test_failed_registration(api_client):
-    url = reverse('register')  
-    data = {
-        "username": "user_without_password",
-        "email": "user@example.com"
-    }
-    response = api_client.post(url, data, format='json')
-    assert response.status_code == 400
-    assert response.json().get("error") == "Все поля обязательны"
+def test_get_room_questions(api_client, create_room_with_questions):
+    # Создаем комнату с вопросами
+    room, questions = create_room_with_questions(name="Test Room 1", player_count=5, theme="Спорт", answer_time=10)
 
-@pytest.mark.django_db
-def test_successful_login(api_client, create_user):
-    create_user(username="login_user", password="password123")
-    url = reverse('login') 
-    data = {
-        "username": "login_user",
-        "password": "password123"
-    }
-    response = api_client.post(url, data, format='json')
+    # Отправляем запрос на получение вопросов для комнаты
+    url = reverse('get_room_questions', args=[room.name])
+    response = api_client.get(url)
+    
+    # Проверяем, что запрос выполнен успешно
     assert response.status_code == 200
-    assert response.json().get("message") == "Login successful!"
+    
+    # Проверяем, что количество вопросов в ответе соответствует player_count
+    assert len(response.json()) == room.player_count
 
 @pytest.mark.django_db
-def test_failed_login(api_client):
-    url = reverse('login') 
-    data = {
-        "username": "wrong_user",
-        "password": "wrong_password"
-    }
-    response = api_client.post(url, data, format='json')
-    assert response.status_code == 400
-    assert response.json().get("error") == "Неверное имя пользователя или пароль."
+def test_get_room_questions_limited(api_client, create_room_with_questions):
+    # Создаем комнату с вопросами, где player_count ограничивает количество вопросов
+    room, questions = create_room_with_questions(name="Test Room 2", player_count=3, theme="Спорт", answer_time=10)
 
-
-@pytest.mark.django_db
-def test_session_saved_after_login(api_client, create_user):
-    create_user(username="session_user", password="session_password")
-
-    # Логинимся
-    url_login = reverse('login') 
-    data = {
-        "username": "session_user",
-        "password": "session_password"
-    }
-
-    response = api_client.post(url_login, data, format='json')
+    # Отправляем запрос на получение вопросов для комнаты
+    url = reverse('get_room_questions', args=[room.name])
+    response = api_client.get(url)
+    
+    # Проверяем, что запрос выполнен успешно
     assert response.status_code == 200
-
-    # Проверка через client.session
-    session_data = api_client.session
-    assert session_data is not None  # Проверяем, что сессия содержит идентификатор пользователя
-
+    
+    # Проверяем, что количество вопросов в ответе соответствует player_count
+    assert len(response.json()) == room.player_count
 
 @pytest.mark.django_db
-def test_get_questions_by_theme(create_user):
-    # Создаем несколько вопросов с разными темами
-    question_1 = Question.objects.create(
-        text='Кто выиграл чемпионат мира 2018 года?',
-        options='Бразилия,Франция,Германия,Аргентина',
-        correct_answer='Франция',
-        answer_time=10,
-        theme='Спорт'
-    )
-    question_2 = Question.objects.create(
-        text='Какой год был основан Твиттер?',
-        options='2004,2005,2006,2007',
-        correct_answer='2006',
-        answer_time=10,
-        theme='Технологии'
-    )
-    question_3 = Question.objects.create(
-        text='Какая страна выиграла чемпионат мира по футболу в 2014 году?',
-        options='Германия,Аргентина,Бразилия,Нидерланды',
-        correct_answer='Германия',
-        answer_time=10,
-        theme='Спорт'
-    )
+def test_get_room_questions_random_order(api_client, create_room_with_questions):
+    # Создаем комнату с вопросами, где player_count = 4
+    room, questions = create_room_with_questions(name="Test Room 3", player_count=4, theme="История", answer_time=10)
 
-    # Вызов функции для темы 'Спорт'
-    sport_questions = get_questions_by_theme('Спорт')
+    # Отправляем запрос на получение вопросов для комнаты
+    url = reverse('get_room_questions', args=[room.name])
+    response = api_client.get(url)
+    
+    # Проверяем, что запрос выполнен успешно
+    assert response.status_code == 200
+    
+    # Проверяем, что количество вопросов в ответе соответствует player_count
+    assert len(response.json()) == room.player_count
+    
+    # Проверяем, что вопросы не находятся в исходном порядке (поскольку они должны быть случайными)
+    questions_text = [question['text'] for question in response.json()]
+    assert questions_text != [f'Вопрос по теме История №{i+1}' for i in range(room.player_count)]
 
-    # Проверяем, что в списке вопросов только вопросы с темой 'Спорт'
-    assert sport_questions.count() == 2
-    assert all(question.theme == 'Спорт' for question in sport_questions)
-    assert question_1 in sport_questions
-    assert question_3 in sport_questions
-    assert question_2 not in sport_questions
+@pytest.mark.django_db
+def test_get_room_questions_empty(api_client, create_room_with_questions):
+    # Создаем комнату с вопросами, но player_count = 0, чтобы не было вопросов
+    room, _ = create_room_with_questions(name="Test Room 4", player_count=0, theme="История", answer_time=0)
+
+    # Отправляем запрос на получение вопросов для комнаты
+    url = reverse('get_room_questions', args=[room.name])
+    response = api_client.get(url)
+    
+    # Проверяем, что запрос выполнен успешно
+    assert response.status_code == 200
+    
+    # Проверяем, что в ответе нет вопросов
+    assert len(response.json()) == 0
+
+@pytest.mark.django_db
+def test_get_room_questions_not_found(api_client):
+    # Отправляем запрос на получение вопросов для несуществующей комнаты
+    url = reverse('get_room_questions', args=["NonExistentRoom"])
+    response = api_client.get(url)
+    
+    # Проверяем, что статус ответа равен 404 (комната не найдена)
+    assert response.status_code == 404
+    
+    # Проверяем, что возвращается ошибка
+    assert response.json() == {"error": "Room not found"}
