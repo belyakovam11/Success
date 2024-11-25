@@ -17,7 +17,9 @@ docker exec -it success-backend-1 /bin/bash
 DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py
 
 ЕСЛИ ВЫ КРАЙНЕ ЛЕНИВЫЙ ЧЕЛОВЕК ОДНОЙ КОМАНДОЙ ЗАПУСКАЕМ ТЕСТ
-docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest app_quiz/tests.py"
+docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest user/tests.py"
+docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest trivia/tests.py"
+docker exec -it success-backend-1 bash -c "DJANGO_SETTINGS_MODULE='quiz.settings' pytest room/tests.py"
 
 
 python manage.py makemigrations
