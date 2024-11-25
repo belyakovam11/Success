@@ -11,12 +11,18 @@ on:
       - main
       - frontend
       - backend
-
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
-
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
+          POSTGRES_DB: django
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,23 +37,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Set environment variables (if needed)
+      - name: Set environment variables
         run: |
           echo "DB_USER=django" >> .env
           echo "DB_PASSWORD=django" >> .env
           echo "DB_NAME=django" >> .env
-          echo "DB_HOST=localhost" >> .env
+          echo "DB_HOST=db" >> .env  # Здесь db - это имя сервиса PostgreSQL
           echo "DB_PORT=5432" >> .env
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgres://django:django@localhost/django
+          DATABASE_URL: postgres://django:django@db/django
         run: |
           python backend/manage.py migrate
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://django:django@localhost/django
+          DATABASE_URL: postgres://django:django@db/django
         run: |
           python backend/manage.py test
 
