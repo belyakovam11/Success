@@ -22,13 +22,25 @@ class SubmitAnswerView(APIView):
         if participant.current_question_index >= len(questions):
             return Response({"error": "No more questions"}, status=status.HTTP_400_BAD_REQUEST)
 
-        current_question = questions[participant.current_question_index]
+        question_text = request.data.get('question_text')  # Получаем текст вопроса
+        current_question = questions.filter(text=question_text).first()
+
 
         answer_data = request.data.get('answer')
-        if not answer_data:
-            return Response({"error": "Answer is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not answer_data or not question_text:
+            return Response({"error": "Answer and question text are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        is_correct = answer_data.strip() == current_question.correct_answer.strip()
+        # Логирование отправленного ответа, текста вопроса и правильного ответа
+        # print(f"Received Answer: {answer_data.strip()}")  # Логируем ответ с фронта
+        # print(f"Question Text: {question_text}")  # Логируем текст вопроса
+        # print(f"Correct Answer: {current_question.correct_answer}")  # Логируем правильный ответ
+
+        # Сравниваем ответ с правильным через SQL запрос
+        is_correct = current_question.correct_answer == answer_data.strip()
+
+        # Дополнительное логирование вопроса
+        # print(f"Question: {current_question.text}")
+        # print(f"My Answer: {answer_data.strip()}")
 
         # Сохраняем ответ
         QuizAnswer.objects.create(

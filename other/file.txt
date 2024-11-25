@@ -27,10 +27,10 @@ python manage.py makemigrations
 Пишем в новом терминале команду после запуска (она ниже) 
 docker exec -it success-db-1 psql -U django
 
-SELECT * FROM app_quiz_customuser;
-SELECT * FROM app_quiz_room;
-SELECT * FROM app_quiz_roomparticipant;
-SELECT * FROM app_quiz_question;
+SELECT * FROM user_customuser;
+SELECT * FROM room_room;
+SELECT * FROM room_roomparticipant;
+SELECT * FROM trivia_question;
 
 
 ДЛЯ БД НЕ ОБЯЗАТЕЛЬНО ЮЗАТЬ ПРОСТО КОМАНДЫ ДЛЯ ПОЛУЧЕНИЯ ИНФЫ

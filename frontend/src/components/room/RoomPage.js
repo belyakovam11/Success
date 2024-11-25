@@ -61,6 +61,7 @@ const RoomPage = () => {
     setStartTime(new Date()); // Record the start time of the quiz
   };
 
+
   const submitAnswer = (answer) => {
     setSelectedAnswer(answer);
     const correct = answer === questions[currentQuestionIndex].correct_answer;
@@ -69,6 +70,29 @@ const RoomPage = () => {
     if (correct) {
       setScore(prevScore => prevScore + 1); // Increase score for correct answers
     }
+
+    // Логирование вопроса, выбранного ответа и правильного ответа
+    // console.log("Отправляемый вопрос:", questions[currentQuestionIndex].text);
+    // console.log("Выбранный ответ:", answer);
+    // console.log("Правильный ответ:", questions[currentQuestionIndex].correct_answer);
+
+    // Отправка данных на сервер
+    fetch(`/api/room/${name}/submit-answer/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': navigator.userAgent,
+      },
+      body: JSON.stringify({
+        answer,
+        question_text: questions[currentQuestionIndex].text  // Добавлен текст вопроса
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Ответ отправлен:", data);
+      })
+      .catch((error) => console.error('Ошибка отправки ответа:', error));
 
     // Reduced the delay to 500 milliseconds (0.5 seconds)
     setTimeout(() => {
