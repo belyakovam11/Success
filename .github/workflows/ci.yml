@@ -4,16 +4,16 @@ on:
   push:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
   pull_request:
     branches:
       - main
-      - fronted
+      - frontend
       - backend
 
 jobs:
-  test-backendend:
+  test-backend:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
 
@@ -73,7 +73,7 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
+    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main' # Запускается только для веток frontend и main
 
     steps:
       - name: Checkout code
@@ -88,6 +88,31 @@ jobs:
         run: |
           npm install
 
-      - name: Run frontend tests
+      - name: Build frontend
         run: |
-          npm run test
+          npm run build # Команда для сборки фронтенда
+
+      - name: Run frontend tests (optional)
+        run: |
+          npm run test -- --watchAll=false # Для запуска тестов фронтенда, если они есть
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/frontend' || github.ref == 'refs/heads/main' # Запускается только для веток frontend и main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build frontend
+        run: |
+          npm run build # Команда для сборки фронтенда
