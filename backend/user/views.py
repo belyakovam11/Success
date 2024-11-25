@@ -7,7 +7,10 @@ from user.tasks import send_registration_email
 from django.contrib.auth import authenticate
 import json
 import sys
+from django.db import connection
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 class UserList(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()  # Изменено на CustomUser
@@ -43,16 +46,46 @@ def register_view(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
 @csrf_exempt
 def get_username(request):
     username = request.session.get('username')  # Получаем username из Django сессии
-    if username:
-        return JsonResponse({"username": username})
-    else:
+    if not username:
         return JsonResponse({"error": "User is not logged in"}, status=400)
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                rp.user,
+                COALESCE(SUM(rp.correct_answers_count), 0) AS rating,
+                COALESCE(
+                    (SELECT theme 
+                     FROM room_roomparticipant AS rp_inner 
+                     JOIN room_room AS r ON rp_inner.room_id = r.id 
+                     WHERE rp_inner.user = rp.user 
+                     GROUP BY theme 
+                     ORDER BY COUNT(theme) DESC LIMIT 1), 
+                'Нету') AS favorite_category
+            FROM room_roomparticipant AS rp
+            WHERE rp.user = %s
+            GROUP BY rp.user;
+        """, [username])
+
+        result = cursor.fetchone()
+
+    if result:
+        return JsonResponse({
+            "username": result[0],
+            "rating": result[1],
+            "favorite_category": result[2]
+        })
+    else:
+        # Если статистика пользователя не найдена
+        return JsonResponse({
+            "username": username,
+            "rating": 0,
+            "favorite_category": "Нет данных"
+        })
+
     
 @csrf_exempt
 def login_view(request):
@@ -75,3 +108,4 @@ def login_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
+

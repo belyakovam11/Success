@@ -7,6 +7,8 @@ const MainPage = () => {
   const [availableRooms, setAvailableRooms] = useState([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [rating, setRating] = useState(null);  // Для рейтинга
+  const [favoriteCategory, setFavoriteCategory] = useState('');  // Для любимой категории
   const [roomDetails, setRoomDetails] = useState({
     name: '',
     playerCount: '',
@@ -18,16 +20,49 @@ const MainPage = () => {
 
   const themes = ['Спорт', 'История'];
 
-  // Получение имени пользователя
-  const fetchUsername = async () => {
+  // Определяем функцию fetchUserData вне useEffect
+  const fetchUserData = async () => {
     try {
       const response = await fetch('/get-username/');
       const data = await response.json();
-      setUsername(data.username);
+
+      if (data.username) {
+        setUsername(data.username);
+      }
+
+      if (data.rating !== undefined) {
+        setRating(data.rating);
+        setFavoriteCategory(data.favorite_category);
+      }
     } catch (error) {
-      console.error('Ошибка при получении имени пользователя:', error);
+      console.error('Ошибка при получении данных пользователя:', error);
     }
   };
+
+  useEffect(() => {
+    fetchUserData(); // Вызываем fetchUserData
+    fetchAvailableRooms();
+
+    // Обновляем список комнат каждые 0.5 секунд
+    const intervalId = setInterval(fetchAvailableRooms, 500);
+
+    // Очистка интервала при размонтировании компонента
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Второй useEffect больше не вызывает ошибок
+  useEffect(() => {
+    fetchUserData(); // Функция доступна, так как объявлена снаружи
+    fetchAvailableRooms();
+
+    // Обновляем список комнат каждые 0.5 секунд
+    const intervalId = setInterval(fetchAvailableRooms, 500);
+
+    // Очистка интервала при размонтировании компонента
+    return () => clearInterval(intervalId);
+  }, [username]);
+
+
 
   // Получение доступных комнат
   const fetchAvailableRooms = async () => {
@@ -152,16 +187,6 @@ const MainPage = () => {
     setRoomDetails({ ...roomDetails, [name]: value });
   };
 
-  useEffect(() => {
-    fetchUsername();
-    fetchAvailableRooms();
-
-    // Обновляем список комнат каждые 0.5 секунд
-    const intervalId = setInterval(fetchAvailableRooms, 500);
-
-    // Очистка интервала при размонтировании компонента
-    return () => clearInterval(intervalId);
-  }, [username]);
 
   return (
     <div className="main-page">
@@ -172,8 +197,8 @@ const MainPage = () => {
           className="profile-pic"
         />
         <h2>{username || 'Загрузка...'}</h2>
-        <p>Рейтинг: 1500</p>
-        <p>Любимая категория: Насекомые</p>
+        <p>Кол-во очков: {rating !== null ? rating : 'Загрузка...'}</p>
+        <p>Любимая категория: {favoriteCategory || 'Нету'}</p>
       </div>
 
       <h2>Доступные комнаты:</h2>

@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-
 def rooms(request):
     # Получаем все комнаты через ORM
     rooms_queryset = Room.objects.all()
@@ -107,3 +106,4 @@ def create_room(request):
         except Exception as e:
             print("Ошибка:", str(e))  # Логируем ошибку
             return JsonResponse({'error': str(e)}, status=400)
+
