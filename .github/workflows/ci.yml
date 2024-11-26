@@ -1,42 +1,48 @@
-name: CI Pipeline - Database Connection Test
+name: Django CI - Database Check
 
 on:
   push:
     branches:
-      - main
+      - main  # Запускать при пуше в основную ветку
   pull_request:
     branches:
-      - main
+      - main  # Запускать при PR в основную ветку
 
 jobs:
-  test_db_connection:
-    runs-on: ubuntu-latest
-    
+  check-db:
+    runs-on: ubuntu-latest  # Операционная система для выполнения
+
     services:
       postgres:
-        image: postgres:13
+        image: postgres:latest
         env:
+          POSTGRES_DB: django
           POSTGRES_USER: django
           POSTGRES_PASSWORD: django
-          POSTGRES_DB: django_db
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U django" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="pg_isready -h localhost -U django -d django" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          until pg_isready -h localhost -p 5432 -U django; do
-            sleep 2
-          done
-          echo "PostgreSQL is ready!"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
 
-      - name: Run Database Connection Test
+      - name: Install dependencies
         run: |
-          echo "Testing database connection..."
-          pgcli -h localhost -p 5432 -U django -d django_db -c "SELECT 1"
-          echo "Database connection successful!"
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Check database connection and run migrations
+        run: |
+          python manage.py migrate  # Проверяем подключение и выполняем миграции
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: django
+          DATABASE_USER: django
+          DATABASE_PASSWORD: django
