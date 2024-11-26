@@ -14,32 +14,41 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      db:
+      postgres:
         image: postgres:13
         env:
           POSTGRES_USER: django
           POSTGRES_PASSWORD: django
           POSTGRES_DB: django
         ports:
-          - "5433:5432"
+          - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U django -d django -h localhost -p 5432"
+          --health-cmd="pg_isready -U django"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=3
       redis:
         image: redis:alpine
         ports:
-          - "6380:6379"
+          - 6379:6379
 
       rabbitmq:
         image: rabbitmq:3-management
         ports:
-          - "5673:5672"
+          - 5672:5672
+
+    env:
+      DJANGO_SETTINGS_MODULE: quiz.settings
+      PYTHONPATH: ${{ github.workspace }}/backend  # Adjust if needed
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -47,21 +56,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL service
         run: |
-          until pg_isready -h localhost -p 5433 -U django -d django; do
-            echo "Waiting for PostgreSQL to be ready..."
+          echo "Waiting for PostgreSQL to start..."
+          until docker exec $(docker ps --filter "name=postgres" --format "{{.Names}}") pg_isready -U django; do
+            echo "Waiting for PostgreSQL..."
             sleep 5
           done
+          echo "PostgreSQL is ready."
 
-      - name: Run Migrations
+      - name: Test PostgreSQL connection via Django
+        run: |
+          echo "Testing database connection..."
+          cd backend
+          python manage.py shell -c "from django.db import connections; connections['default'].ensure_connection(); print('Database connection successful')"
+
+      - name: Apply database migrations
         run: |
           cd backend
-          python manage.py migrate  # Применение миграций
+          python manage.py migrate
 
-      - name: Run Backend Tests
+      - name: Run tests
         run: |
           cd backend
-          export DJANGO_SETTINGS_MODULE=quiz.settings  # Установка переменной окружения
-          python -c "import django; django.setup()"  # Инициализация Django
-          pytest user/tests.py trivia/tests.py room/tests.py  # Запуск тестов
+          pytest user/tests.py trivia/tests.py room/tests.py
+
+      - name: Shutdown Docker Compose
+        run: |
+          docker-compose down
