@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  backend-tests:
-    name: Backend Tests
+  check-db-connection:
+    name: Check Database Connection
     runs-on: ubuntu-latest
 
     services:
@@ -21,37 +21,87 @@ jobs:
           POSTGRES_PASSWORD: django
           POSTGRES_DB: django
         ports:
-          - 5432:5432
+          - "5433:5432"  # Используем кастомный порт для PostgreSQL
         options: >-
-          --health-cmd="pg_isready -U django"
+          --health-cmd="pg_isready -U django -d django -h localhost -p 5432"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
+
       redis:
         image: redis:alpine
         ports:
-          - 6379:6379
+          - "6380:6379"  # Пример с изменением порта для Redis
+
       rabbitmq:
         image: rabbitmq:3-management
         ports:
-          - 5672:5672
-
-    env:
-      DJANGO_SETTINGS_MODULE: quiz.settings
-      PYTHONPATH: ${{ github.workspace }}/backend
+          - "5673:5672"  # Пример с изменением порта для RabbitMQ
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Clean up Docker containers
+      - name: Wait for PostgreSQL to be ready
         run: |
-          docker ps -q --filter "ancestor=postgres:13" | xargs -I {} docker stop {}
-          docker ps -q --filter "ancestor=redis:alpine" | xargs -I {} docker stop {}
-          docker ps -q --filter "ancestor=rabbitmq:3-management" | xargs -I {} docker stop {}
+          until pg_isready -h localhost -p 5433 -U django -d django; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 5
+          done
 
-      - name: Set up Docker Compose
-        uses: docker/setup-buildx-action@v2
+      - name: Verify PostgreSQL connection
+        run: |
+          pg_isready -h localhost -p 5433 -U django -d django
+
+  run-backend-tests:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    needs: check-db-connection  # Этот job зависит от выполнения предыдущего
+
+    services:
+      db:
+        image: postgres:13
+        env:
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
+          POSTGRES_DB: django
+        ports:
+          - "5433:5432"
+        options: >-
+          --health-cmd="pg_isready -U django -d django -h localhost -p 5432"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:alpine
+        ports:
+          - "6380:6379"
+
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - "5673:5672"
+
+    env:
+      DJANGO_SETTINGS_MODULE: quiz.settings
+      PYTHONPATH: ${{ github.workspace }}/backend
+      POSTGRES_DB: django
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Wait for services to be ready
+        run: |
+          until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $POSTGRES_USER -d $POSTGRES_DB; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 5
+          done
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -64,32 +114,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Start Docker Compose services
-        run: |
-          docker-compose -f docker-compose.yml up -d
-          
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h db -U django; do
-            echo "Waiting for database to be ready..."
-            sleep 3
-          done
-
-      - name: Apply database migrations
-        run: |
-          cd backend
-          python manage.py migrate
-
-      - name: Run tests
+      - name: Run Backend Tests
         run: |
           cd backend
           pytest user/tests.py trivia/tests.py room/tests.py
 
-      - name: Shutdown Docker Compose
+      - name: Shutdown Docker services
         run: |
-          docker-compose down
+          docker-compose down --volumes --remove-orphans
