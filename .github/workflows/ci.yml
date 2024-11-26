@@ -59,4 +59,6 @@ jobs:
         run: |
           cd backend
           export DJANGO_SETTINGS_MODULE=quiz.settings  # Установка переменной окружения
+          python -c "import django; django.setup()"  # Инициализация Django
           pytest user/tests.py trivia/tests.py room/tests.py
+
