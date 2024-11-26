@@ -14,28 +14,33 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      db:
         image: postgres:13
         env:
-          POSTGRES_USER: django
-          POSTGRES_PASSWORD: django
-          POSTGRES_DB: django
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        options: >-
+          --health-cmd="pg_isready --host=db --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
         ports:
-          - "5433:5432"  # Пример с изменением порта для postgres
-
+          - 5432:5432
+        volumes:
+          - /var/lib/postgresql/data
       redis:
         image: redis:alpine
         ports:
-          - "6380:6379"  # Пример с изменением порта для redis
-
+          - 6379:6379
       rabbitmq:
         image: rabbitmq:3-management
         ports:
-          - "5673:5672"  # Пример с изменением порта для rabbitmq
+          - 5672:5672
 
     env:
-      DJANGO_SETTINGS_MODULE: quiz.settings  # Убедитесь, что путь к настройкам правильный
-      PYTHONPATH: ${{ github.workspace }}/backend  # Добавьте папку backend в PYTHONPATH
+      DJANGO_SETTINGS_MODULE: quiz.settings  # Ensure this points to the correct settings module
+      PYTHONPATH: ${{ github.workspace }}/backend  # Add backend folder to PYTHONPATH
 
     steps:
       - name: Checkout code
@@ -43,8 +48,9 @@ jobs:
 
       - name: Clean up Docker containers
         run: |
-          docker ps -q | xargs -r docker stop  # Останавливаем все работающие контейнеры
-          docker ps -a -q | xargs -r docker rm  # Удаляем все контейнеры
+          docker ps -q --filter "ancestor=postgres:13" | xargs -I {} docker stop {}
+          docker ps -q --filter "ancestor=redis:alpine" | xargs -I {} docker stop {}
+          docker ps -q --filter "ancestor=rabbitmq:3-management" | xargs -I {} docker stop {}
 
       - name: Set up Docker Compose
         uses: docker/setup-buildx-action@v2
@@ -67,7 +73,14 @@ jobs:
 
       - name: Start Docker Compose services
         run: |
-          docker-compose -f docker-compose.yml up -d --remove-orphans  # Используем --remove-orphans для очистки лишних контейнеров
+          docker-compose -f docker-compose.yml up -d
+
+      - name: Wait for Postgres
+        run: |
+          until pg_isready --host=db --port=5432 --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}; do
+            echo "Waiting for Postgres...";
+            sleep 5;
+          done
 
       - name: Apply database migrations
         run: |
@@ -81,5 +94,4 @@ jobs:
 
       - name: Shutdown Docker Compose
         run: |
-          docker-compose down --volumes --remove-orphans  # Останавливаем контейнеры и удаляем лишние
-
+          docker-compose down
