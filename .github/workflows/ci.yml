@@ -75,18 +75,3 @@ jobs:
       - name: Run frontend tests (optional)
         run: |
           docker-compose -f docker-compose.yml run frontend npm test
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build_and_test
-
-    steps:
-      # Шаг 1: Клонирование репозитория
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      # Шаг 2: Деплой на production сервер
-      - name: Deploy to production server
-        run: |
-          echo "Deploying to production server"
-          # Добавьте ваш скрипт для деплоя сюда
