@@ -53,6 +53,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Set environment variables
+      run: |
+        export DJANGO_SETTINGS_MODULE=quiz.settings  # Укажите путь к вашим настройкам
+        export PYTHONPATH=$PYTHONPATH:$(pwd)  # Добавьте текущую директорию в PYTHONPATH
+
     - name: Verify pytest installation
       run: |
         pytest --version
