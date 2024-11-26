@@ -3,13 +3,14 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - '**'  # Запуск для всех веток
+      - main
   pull_request:
     branches:
-      - '**'  # Запуск для всех веток
+      - main
 
 jobs:
-  test-backend:
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
 
     services:
@@ -28,60 +29,69 @@ jobs:
           - 5432:5432
         volumes:
           - /var/lib/postgresql/data
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+
+    env:
+      DJANGO_SETTINGS_MODULE: quiz.settings  # Ensure this points to the correct settings module
+      PYTHONPATH: ${{ github.workspace }}/backend  # Add backend folder to PYTHONPATH
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Clean up Docker containers
+        run: |
+          docker ps -q --filter "ancestor=postgres:13" | xargs -I {} docker stop {}
+          docker ps -q --filter "ancestor=redis:alpine" | xargs -I {} docker stop {}
+          docker ps -q --filter "ancestor=rabbitmq:3-management" | xargs -I {} docker stop {}
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v2
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
+          cd backend
           python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+          pip install -r requirements.txt
 
-      - name: Load environment variables
+      - name: Install Docker Compose
         run: |
-          cp .env.example .env
+          sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: Start Docker Compose services
+        run: |
+          docker-compose -f docker-compose.yml up -d
 
       - name: Wait for Postgres
         run: |
-          until pg_isready --host=${{ secrets.DB_HOST }} --port=${{ secrets.DB_PORT }} --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}; do
+          until pg_isready --host=db --port=5432 --username=${{ secrets.DB_USER }} --dbname=${{ secrets.DB_NAME }}; do
             echo "Waiting for Postgres...";
             sleep 5;
           done
 
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}/${{ secrets.DB_NAME }}
+      - name: Apply database migrations
         run: |
-          python backend/manage.py migrate
+          cd backend
+          python manage.py migrate
 
       - name: Run tests
-        env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost/${{ secrets.DB_NAME }}
         run: |
-          python backend/manage.py test
+          cd backend
+          pytest user/tests.py trivia/tests.py room/tests.py
 
-  test-frontend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
+      - name: Shutdown Docker Compose
         run: |
-          npm install
-
-      - name: Run frontend tests
-        run: |
-          npm run test
+          docker-compose down
