@@ -55,7 +55,7 @@ jobs:
     - name: Run tests
       run: |
         cd backend
-        pytest
+        pytest user/tests.py trivia/tests.py room/tests.py
 
   frontend-tests:
     name: Frontend Tests
