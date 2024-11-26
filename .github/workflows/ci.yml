@@ -47,6 +47,7 @@ jobs:
           echo "Running database tests..."
           
           # Create a test table
+          export PGPASSWORD=django
           psql -h localhost -p 5432 -U django -d django_db -c "CREATE TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));"
           
           # Insert data into the table
