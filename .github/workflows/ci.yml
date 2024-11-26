@@ -7,9 +7,10 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
-  run-tests:
-    name: Run Django Tests
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
 
     services:
@@ -27,26 +28,40 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+
+    env:
+      DJANGO_SETTINGS_MODULE: quiz.settings  # Ensure this points to the correct settings module
+      PYTHONPATH: ${{ github.workspace }}/backend  # Add backend folder to PYTHONPATH
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Set up Django environment
-      run: |
-        cd backend
-        python manage.py migrate  # Ensure that database is set up
+      - name: Verify pytest installation
+        run: |
+          pytest --version
 
-    - name: Run tests
-      run: |
-        cd backend
-        DJANGO_SETTINGS_MODULE='quiz.settings' pytest user/tests.py trivia/tests.py room/tests.py
+      - name: Run tests
+        run: |
+          cd backend
+          pytest user/tests.py trivia/tests.py room/tests.py
