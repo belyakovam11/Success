@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  backend-tests:
-    name: Backend Tests
+  run-tests:
+    name: Run Django Tests
     runs-on: ubuntu-latest
 
     services:
@@ -28,18 +28,8 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
-
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - 5672:5672
-
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -49,20 +39,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd backend
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r backend/requirements.txt
 
-    - name: Set environment variables
-      run: |
-        export DJANGO_SETTINGS_MODULE=quiz.settings  # Укажите путь к вашим настройкам
-        export PYTHONPATH=$PYTHONPATH:$(pwd)  # Добавьте текущую директорию в PYTHONPATH
-
-    - name: Verify pytest installation
-      run: |
-        pytest --version
-
-    - name: Run tests
+    - name: Run tests with environment variable
       run: |
         cd backend
-        pytest user/tests.py trivia/tests.py room/tests.py
+        DJANGO_SETTINGS_MODULE='quiz.settings' pytest user/tests.py trivia/tests.py room/tests.py
