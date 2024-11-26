@@ -3,19 +3,14 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
-      - fronted
-      - backend
+      - '**'  # Запуск для всех веток
   pull_request:
     branches:
-      - main
-      - fronted
-      - backend
+      - '**'  # Запуск для всех веток
 
 jobs:
-  test-backendend:
+  test-backend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/backend' || github.ref == 'refs/heads/main' # Запускается только для веток backend и main
 
     services:
       db:
@@ -73,7 +68,6 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/fronted' || github.ref == 'refs/heads/main' # Запускается только для веток fronted и main
 
     steps:
       - name: Checkout code
