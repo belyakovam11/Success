@@ -39,8 +39,8 @@ jobs:
           - 5672:5672
 
     env:
-      DJANGO_SETTINGS_MODULE: quiz.settings  # Устанавливаем переменную окружения для всего job
-      PYTHONPATH: ${{ github.workspace }}/backend  # Убедитесь, что путь к вашему backend правильный
+      DJANGO_SETTINGS_MODULE: quiz.settings  # Ensure this points to the correct settings module
+      PYTHONPATH: ${{ github.workspace }}/backend  # Add backend folder to PYTHONPATH
 
     steps:
       - name: Checkout code
@@ -57,28 +57,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Set up Django environment
+      - name: Install Docker Compose
         run: |
-          export DJANGO_SETTINGS_MODULE=quiz.settings  # Устанавливаем переменную окружения для текущего шага
-          python -c "import django; django.setup()"  # Инициализация Django
+          sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Wait for PostgreSQL to be ready
+      - name: Start Docker Compose services
         run: |
-          until pg_isready -h postgres -U django; do
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 1
-          done
+          docker-compose -f docker-compose.yml up -d
 
       - name: Apply database migrations
         run: |
           cd backend
           python manage.py migrate
 
-      - name: Verify pytest installation
-        run: |
-          pytest --version
-
       - name: Run tests
         run: |
           cd backend
           pytest user/tests.py trivia/tests.py room/tests.py
+
+      - name: Shutdown Docker Compose
+        run: |
+          docker-compose -f docker-compose.yml down
