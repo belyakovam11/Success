@@ -20,8 +20,13 @@ jobs:
       - name: Start services
         run: docker-compose up -d db redis rabbitmq
 
+      # Backend tests
       - name: Run backend tests
         run: docker-compose run --rm test-runner
+
+      # Frontend tests
+      - name: Run frontend tests
+        run: docker-compose run --rm frontend npm test
 
       - name: Stop services
         run: docker-compose down
