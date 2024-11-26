@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Workflow
 
 on:
   push:
@@ -9,56 +9,37 @@ on:
       - main
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: postgres:13
-        env:
-          POSTGRES_USER: django
-          POSTGRES_PASSWORD: django
-          POSTGRES_DB: django_db
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready -U django" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify Docker Compose installation
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
 
-      - name: Build Docker containers
-        run: docker-compose -f docker-compose.yml build
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Start Docker containers
-        run: docker-compose -f docker-compose.yml up -d
+    - name: Install Docker Compose
+      run: |
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
 
-      - name: Wait for DB to be ready
-        run: |
-          until docker exec $(docker ps -q --filter name=success-db) pg_isready -U django; do
-            echo "Waiting for database to be ready..."
-            sleep 2
-          done
-        continue-on-error: true
+    - name: Build and Start Containers
+      run: docker-compose up -d
 
-      - name: Run database tests
-        run: |
-          export PGPASSWORD=django
-          result=$(psql -h localhost -p 5432 -U django -d django_db -t -c "SELECT name FROM test_table WHERE id=1;" | sed 's/^[ \t]*//;s/[ \t]*$//')
-          echo "Result: '$result'"
-          if [ "$result" != "Test Name" ]; then
-            echo "Test failed: Data is incorrect."
-            exit 1
-          fi
+    - name: List Containers
+      run: docker ps
 
-      - name: Clean up
-        run: docker-compose down
+    - name: Check test-runner Container Status
+      run: |
+        docker-compose up test-runner
+        docker-compose logs test-runner
