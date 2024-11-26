@@ -58,4 +58,5 @@ jobs:
       - name: Run Backend Tests
         run: |
           cd backend
+          export DJANGO_SETTINGS_MODULE=quiz.settings  # Установка переменной окружения
           pytest user/tests.py trivia/tests.py room/tests.py
