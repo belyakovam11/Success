@@ -1,13 +1,3 @@
-name: CI Pipeline
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
 jobs:
   run-tests:
     name: Run Django Tests
@@ -45,9 +35,9 @@ jobs:
     - name: Set up Django environment
       run: |
         cd backend
-        python manage.py migrate  # This ensures Django apps are loaded
+        python manage.py migrate  # Ensure that database is set up
 
-    - name: Run tests with environment variable
+    - name: Run tests
       run: |
         cd backend
         DJANGO_SETTINGS_MODULE='quiz.settings' pytest user/tests.py trivia/tests.py room/tests.py
