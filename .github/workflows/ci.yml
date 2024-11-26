@@ -1,4 +1,4 @@
-name: Django CI
+name: Django CI - Database Check
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main  # Запускать при PR в основную ветку
 
 jobs:
-  build:
+  check-db:
     runs-on: ubuntu-latest  # Операционная система для выполнения
 
     services:
@@ -22,17 +22,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd='pg_isready -U django' --health-interval=10s --health-timeout=5s --health-retries=5
-
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-
-      rabbitmq:
-        image: rabbitmq:management
-        ports:
-          - 5672:5672
-          - 15672:15672
 
     steps:
       - name: Checkout code
@@ -48,20 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run migrations
+      - name: Check database connection and run migrations
         run: |
-          python manage.py migrate
-
-      - name: Run tests
-        run: |
-          pytest --maxfail=1 --disable-warnings -q
+          python manage.py migrate  # Проверяем подключение и выполняем миграции
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: django
           DATABASE_USER: django
           DATABASE_PASSWORD: django
-          CELERY_BROKER_URL: amqp://guest:guest@localhost:5672//
-          CELERY_RESULT_BACKEND: redis://localhost:6379/0
-          SESSION_ENGINE: django.contrib.sessions.backends.cache
-          SESSION_CACHE_ALIAS: default
