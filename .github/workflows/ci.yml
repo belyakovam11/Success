@@ -62,6 +62,18 @@ jobs:
           export DJANGO_SETTINGS_MODULE=quiz.settings  # Устанавливаем переменную окружения для текущего шага
           python -c "import django; django.setup()"  # Инициализация Django
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h postgres -U django; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 1
+          done
+
+      - name: Apply database migrations
+        run: |
+          cd backend
+          python manage.py migrate
+
       - name: Verify pytest installation
         run: |
           pytest --version
