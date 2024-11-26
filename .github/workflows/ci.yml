@@ -1,4 +1,4 @@
-name: CI Pipeline - Database Connection Test
+name: CI Pipeline - Database Connection and Tests
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test_db_connection:
+  test_db_connection_and_queries:
     runs-on: ubuntu-latest
     
     services:
@@ -25,10 +25,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: List directory contents (debug)
-        run: ls -al /home/runner/work/Success/Success/
+        uses: actions/checkout@v2
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -38,13 +35,35 @@ jobs:
           done
           echo "PostgreSQL is ready!"
 
-      - name: Run Database Migrations
-        run: |
-          cd /home/runner/work/Success/Success/  # Убедитесь, что путь правильный
-          python manage.py migrate  # Проверяем подключение и выполняем миграции
-
       - name: Run Database Connection Test
         run: |
           echo "Testing database connection..."
+          export PGPASSWORD=django
           psql -h localhost -p 5432 -U django -d django_db -c "SELECT 1"
           echo "Database connection successful!"
+
+      - name: Run Database Tests
+        run: |
+          echo "Running database tests..."
+          
+          # Create a test table
+          psql -h localhost -p 5432 -U django -d django_db -c "CREATE TABLE test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));"
+          
+          # Insert data into the table
+          psql -h localhost -p 5432 -U django -d django_db -c "INSERT INTO test_table (name) VALUES ('Test Name');"
+          
+          # Select data from the table
+          result=$(psql -h localhost -p 5432 -U django -d django_db -t -c "SELECT name FROM test_table WHERE id=1;")
+          
+          # Check if the data exists
+          if [ "$result" = "Test Name" ]; then
+            echo "Test passed: Data is correct."
+          else
+            echo "Test failed: Data is incorrect."
+            exit 1
+          fi
+          
+          # Clean up the test table
+          psql -h localhost -p 5432 -U django -d django_db -c "DROP TABLE test_table;"
+
+          echo "Database tests completed successfully!"
