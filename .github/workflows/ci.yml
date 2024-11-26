@@ -1,77 +1,67 @@
-name: CI Pipeline
+name: Django CI
 
 on:
   push:
     branches:
-      - main
+      - main  # Запускать при пуше в основную ветку
   pull_request:
     branches:
-      - main
+      - main  # Запускать при PR в основную ветку
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest  # Операционная система для выполнения
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:latest
         env:
+          POSTGRES_DB: django
           POSTGRES_USER: django
           POSTGRES_PASSWORD: django
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U django" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd='pg_isready -U django' --health-interval=10s --health-timeout=5s --health-retries=5
+
       redis:
-        image: redis:alpine
+        image: redis:latest
         ports:
           - 6379:6379
 
+      rabbitmq:
+        image: rabbitmq:management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
     steps:
-      # Шаг 1: Клонирование репозитория
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      # Шаг 2: Настройка Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Шаг 3: Установка Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify Docker Compose installation
-
-      # Шаг 4: Кеширование слоев Docker
-      - name: Cache Docker layers
-        uses: actions/cache@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          path: ~/.docker/cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
+          python-version: 3.9
 
-      # Шаг 5: Сборка Docker контейнеров
-      - name: Build Docker images
+      - name: Install dependencies
         run: |
-          docker-compose -f docker-compose.yml build
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      # Шаг 6: Ожидание, пока PostgreSQL будет готов к подключению
-      - name: Wait for PostgreSQL to be ready
+      - name: Run migrations
         run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          until pg_isready -h db -U django -d django; do
-            echo "Waiting for PostgreSQL to accept connections..."
-            sleep 2
-          done
-          echo "PostgreSQL is ready to accept connections!"
+          python manage.py migrate
 
-      # Шаг 7: Запуск тестов на backend
-      - name: Run backend tests
+      - name: Run tests
         run: |
-          docker-compose -f docker-compose.yml run test-runner
-
-      # Шаг 8: (Опционально) Запуск тестов на frontend
-      - name: Run frontend tests (optional)
-        run: |
-          docker-compose -f docker-compose.yml run frontend npm test
+          pytest --maxfail=1 --disable-warnings -q
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: django
+          DATABASE_USER: django
+          DATABASE_PASSWORD: django
+          CELERY_BROKER_URL: amqp://guest:guest@localhost:5672//
+          CELERY_RESULT_BACKEND: redis://localhost:6379/0
+          SESSION_ENGINE: django.contrib.sessions.backends.cache
+          SESSION_CACHE_ALIAS: default
