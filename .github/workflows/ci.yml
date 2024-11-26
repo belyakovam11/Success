@@ -75,6 +75,11 @@ jobs:
         run: |
           docker-compose -f docker-compose.yml up -d
 
+      - name: Apply database migrations
+        run: |
+          cd backend
+          python manage.py migrate
+
       - name: Run tests
         run: |
           cd backend
