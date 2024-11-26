@@ -25,10 +25,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: List directory contents (debug)
-        run: ls -al /home/runner/work/Success/Success/
+        uses: actions/checkout@v2
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -38,13 +35,9 @@ jobs:
           done
           echo "PostgreSQL is ready!"
 
-      - name: Run Database Migrations
-        run: |
-          cd /home/runner/work/Success/Success/  # Убедитесь, что путь правильный
-          python manage.py migrate  # Проверяем подключение и выполняем миграции
-
       - name: Run Database Connection Test
         run: |
           echo "Testing database connection..."
+          export PGPASSWORD=django
           psql -h localhost -p 5432 -U django -d django_db -c "SELECT 1"
           echo "Database connection successful!"
