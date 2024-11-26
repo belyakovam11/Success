@@ -9,54 +9,9 @@ on:
       - main
 
 jobs:
-  check-db-connection:
-    name: Check Database Connection
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: django
-          POSTGRES_PASSWORD: django
-          POSTGRES_DB: django
-        ports:
-          - "5433:5432"  # Используем кастомный порт для PostgreSQL
-        options: >-
-          --health-cmd="pg_isready -U django -d django -h localhost -p 5432"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-      redis:
-        image: redis:alpine
-        ports:
-          - "6380:6379"  # Пример с изменением порта для Redis
-
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - "5673:5672"  # Пример с изменением порта для RabbitMQ
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h localhost -p 5433 -U django -d django; do
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 5
-          done
-
-      - name: Verify PostgreSQL connection
-        run: |
-          pg_isready -h localhost -p 5433 -U django -d django
-
-  run-backend-tests:
-    name: Run Backend Tests
-    runs-on: ubuntu-latest
-    needs: check-db-connection  # Этот job зависит от выполнения предыдущего
 
     services:
       db:
@@ -83,42 +38,18 @@ jobs:
         ports:
           - "5673:5672"
 
-    env:
-      DJANGO_SETTINGS_MODULE: quiz.settings
-      PYTHONPATH: ${{ github.workspace }}/backend
-      POSTGRES_DB: django
-      POSTGRES_USER: django
-      POSTGRES_PASSWORD: django
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Wait for services to be ready
+      - name: Wait for PostgreSQL to be ready
         run: |
-          until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $POSTGRES_USER -d $POSTGRES_DB; do
+          until pg_isready -h localhost -p 5433 -U django -d django; do
             echo "Waiting for PostgreSQL to be ready..."
             sleep 5
           done
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
 
       - name: Run Backend Tests
         run: |
           cd backend
           pytest user/tests.py trivia/tests.py room/tests.py
-
-      - name: Shutdown Docker services
-        run: |
-          docker-compose down --volumes --remove-orphans
