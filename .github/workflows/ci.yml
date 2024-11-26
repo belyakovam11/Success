@@ -39,21 +39,12 @@ jobs:
           - 5672:5672
 
     env:
-      DJANGO_SETTINGS_MODULE: quiz.settings  # Ensure this points to the correct settings module
-      PYTHONPATH: ${{ github.workspace }}/backend  # Add backend folder to PYTHONPATH
+      DJANGO_SETTINGS_MODULE: quiz.settings  # Устанавливаем переменную окружения для всего job
+      PYTHONPATH: ${{ github.workspace }}/backend  # Убедитесь, что путь к вашему backend правильный
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Clean up Docker containers
-        run: |
-          docker ps -q --filter "ancestor=postgres:13" | xargs -I {} docker stop {}
-          docker ps -q --filter "ancestor=redis:alpine" | xargs -I {} docker stop {}
-          docker ps -q --filter "ancestor=rabbitmq:3-management" | xargs -I {} docker stop {}
-
-      - name: Set up Docker Compose
-        uses: docker/setup-buildx-action@v2
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -66,25 +57,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Docker Compose
+      - name: Set up Django environment
         run: |
-          sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          export DJANGO_SETTINGS_MODULE=quiz.settings  # Устанавливаем переменную окружения для текущего шага
+          python -c "import django; django.setup()"  # Инициализация Django
 
-      - name: Start Docker Compose services
+      - name: Verify pytest installation
         run: |
-          docker-compose -f docker-compose.yml up -d
-
-      - name: Apply database migrations
-        run: |
-          cd backend
-          python manage.py migrate
+          pytest --version
 
       - name: Run tests
         run: |
           cd backend
           pytest user/tests.py trivia/tests.py room/tests.py
-
-      - name: Shutdown Docker Compose
-        run: |
-          docker-compose down
