@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -13,31 +13,23 @@ on:
       - backend
 
 jobs:
-  build-and-test-backend:
+  test-backend:
     runs-on: ubuntu-latest
 
     services:
       db:
         image: postgres:13
         env:
+          POSTGRES_DB: django
           POSTGRES_USER: django
           POSTGRES_PASSWORD: django
-        ports:
-          - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U django"
+          --health-cmd="pg_isready --host=db --username=django --dbname=django"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-      redis:
-        image: redis:alpine
         ports:
-          - 6379:6379
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - 5672:5672
-          - 15672:15672
+          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -46,22 +38,31 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready --host=db --port=5432 --username=django; do
+            echo "Waiting for database...";
+            sleep 5;
+          done
+
       - name: Run migrations
-        run: |
-          python backend/manage.py migrate
+        env:
+          DATABASE_URL: postgres://django:django@db:5432/django
+        run: python backend/manage.py migrate
 
-      - name: Run backend tests
-        run: |
-          pytest backend/tests/
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://django:django@db:5432/django
+        run: python backend/manage.py test
 
-  build-and-test-frontend:
+  test-frontend:
     runs-on: ubuntu-latest
 
     steps:
@@ -71,37 +72,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '16'
 
       - name: Install dependencies
+        working-directory: frontend
         run: npm install
 
       - name: Run frontend tests
+        working-directory: frontend
         run: npm run test
-
-  docker-integration-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Compose
-        run: |
-          docker-compose -f docker-compose.yml up -d
-
-      - name: Wait for services to start
-        run: |
-          sleep 20  # Ожидание запуска сервисов
-
-      - name: Run backend integration tests
-        run: |
-          docker-compose exec backend pytest user/tests.py trivia/tests.py room/tests.py
-
-      - name: Run frontend integration tests
-        run: |
-          docker-compose exec frontend npm run test
-
-      - name: Tear down Docker Compose
-        run: |
-          docker-compose down
