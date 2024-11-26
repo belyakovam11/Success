@@ -4,6 +4,9 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from room.models import Room, RoomParticipant
 from django.core.management import call_command
+import django
+# Django setup for pytest
+django.setup()
 
 @pytest.fixture
 def api_client():
