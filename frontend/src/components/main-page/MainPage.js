@@ -7,7 +7,7 @@ const MainPage = () => {
   const [availableRooms, setAvailableRooms] = useState([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [rating, setRating] = useState(null);  // Для рейтинга
+  const [rating, setRating] = useState(null);
   const [favoriteCategory, setFavoriteCategory] = useState('');  // Для любимой категории
   const [roomDetails, setRoomDetails] = useState({
     name: '',

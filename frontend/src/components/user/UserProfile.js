@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 const UserProfile = () => {
-    // Состояние для имени пользователя
     const [username, setUsername] = useState('');
     // Состояние для списка созданных комнат
     const [userRooms, setUserRooms] = useState([]);
