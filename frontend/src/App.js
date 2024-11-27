@@ -1,10 +1,10 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Auth from './Auth';
-import MainPage from './MainPage';
-import RoomPage from './RoomPage';
-import './Auth.css';
+import Auth from './components/auth/Auth';
+import MainPage from './components/main-page/MainPage';
+import RoomPage from './components/room/RoomPage';
+import UserProfile from './components/user/UserProfile'; // Импортируем компонент профиля
+import './components/auth/Auth';
 
 function App() {
   return (
@@ -12,7 +12,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/main" element={<MainPage />} />
-        <Route path="/room" element={<RoomPage />} />
+        <Route path="/room/:name" element={<RoomPage />} />
+        <Route path="/profile" element={<UserProfile />} /> {/* Новый маршрут */}
       </Routes>
     </Router>
   );

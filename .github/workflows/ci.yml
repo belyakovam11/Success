@@ -1,55 +1,49 @@
-name: CI
+name: CI Workflow
 
 on:
   push:
     branches:
       - main
+      - frontend
+      - backend
   pull_request:
     branches:
       - main
+      - frontend
+      - backend
 
 jobs:
- build:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+    - name: Install Docker Compose
+      run: |
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
 
-      - name: Build and push Docker images
-        run: |
-          docker-compose -f docker-compose.yml build --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache
-          docker-compose -f docker-compose.yml push
+    - name: Build and Start Containers
+      run: docker-compose up -d
 
-      - name: Start Docker Compose services
-        run: |
-          docker-compose -f docker-compose.yml up -d
+    - name: List Containers
+      run: docker ps
 
-      - name: Run tests
-        run: |
-          # Добавьте ваши команды для тестирования здесь
-          echo "Running tests..."
-
-      - name: Stop and remove Docker Compose services
-        run: |
-          docker-compose -f docker-compose.yml down
+    - name: Check test-runner Container Status
+      run: |
+        docker-compose up test-runner
+        docker-compose logs test-runner

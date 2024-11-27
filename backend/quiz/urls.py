@@ -1,12 +1,19 @@
-from django.contrib import admin
 from django.urls import path
-from app_quiz.views import get_time, get_db_status, UserList, register_view
-from app_quiz.views import get_time, UserList, get_db_status, register_view, login_view
+from user.views import login_view, get_username
+from user.views import register_view
+from room.views import create_room, join_room
+from room.views import rooms, get_room_participants
+from trivia.views import get_room_questions
+from trivia.services import SubmitAnswerView
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('data/', get_time, name='get_time'),
-    path('api/db-status/', get_db_status, name='db_status'),
-    path('api/users/', UserList.as_view(), name='user_list'),
+    path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),  # Добавляем маршрут для регистрации
-     ]
+    path('get-username/', get_username, name='get_username'),
+    path('api/create-room', create_room, name='create_room'),  # Для создания комнаты
+    path('api/join-room', join_room, name='join_room'),  # Для присоединения к комнате
+    path('api/rooms', rooms, name='rooms'),  # Для получения списка комнат
+    path('api/room/<str:room_name>/participants/', get_room_participants, name='get_room_participants'),
+    path('api/room/<str:room_name>/questions/', get_room_questions, name='get_room_questions'),
+    path('api/room/<str:room_name>/submit-answer/', SubmitAnswerView.as_view(), name='submit-answer'),    
+]

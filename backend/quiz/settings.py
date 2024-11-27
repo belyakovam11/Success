@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-k&!01)jnglv(0o1@onm0!f84l76sa-w=zahw)bv4*^)_lnyw^9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['62.113.103.241', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['45.153.188.79', 'localhost', '127.0.0.1','backend']
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
@@ -37,14 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'quiz',
-    'app_quiz',
+    'room',
+    'user',
+    'trivia',
     'corsheaders',
 ]
 
 
 # quiz/settings.py
 
-AUTH_USER_MODEL = 'app_quiz.CustomUser'
+AUTH_USER_MODEL = 'user.CustomUser'
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Установите True в продакшн-режиме
+SESSION_SAVE_EVERY_REQUEST = True
+
 
 
 MIDDLEWARE = [
@@ -137,15 +144,42 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # или другой бекенд, если используется Redis
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_AGE = 3600  # Время жизни cookies
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Сессия будет сохраняться после закрытия браузера
+
+SESSION_CACHE_ALIAS = "default"
+
+# Кэш для сессий с использованием Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',  # Подключаемся к Redis-контейнеру
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Дополнительные настройки Redis для работы с Celery
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
-
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     # Добавьте другие разрешенные источники при необходимости
 ]
+
+# Настройки для отправки почты
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'  # Почтовый сервер 
+EMAIL_PORT = 587  # Порт для SMTP
+EMAIL_USE_TLS = True  # Использовать TLS для безопасности
+EMAIL_HOST_USER = 'world_without_border@mail.ru'  # Ваш email
+EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D'  # Ваш пароль для почты
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Отправитель по умолчанию
