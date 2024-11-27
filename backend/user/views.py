@@ -22,26 +22,26 @@ def register_view(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            username = data.get('username')
-            email = data.get('email')
-            password = data.get('password')
+            username = data.get('username') # Извлекаем имя пользователя
+            email = data.get('email') # Извлекаем почту пользователя
+            password = data.get('password') # Извлекаем пароль
 
             print(f"Username: {username}, Password: {password}")
             sys.stdout.flush()
-            if not all([username, email, password]):
+            if not all([username, email, password]):  # Проверяем, что все поля заполнены
                 return JsonResponse({"error": "Все поля обязательны"}, status=400)
 
-            # Создаем нового пользователя
+            # Создаем нового пользователя с указанными данными
             new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
             
-            # После успешной регистрации вызываем асинхронную задачу для отправки письма
+            # После регистрации вызываем асинхронную задачу для отправки письма
             send_registration_email.delay(email)
             
             return JsonResponse({"message": "Успешно зарегистрированы!"}, status=201)
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-        except Exception as e:
+        except Exception as e: # Обработка других возможных исключений
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
@@ -70,7 +70,7 @@ def get_username(request):
             GROUP BY rp.user;
         """, [username])
 
-        result = cursor.fetchone()
+        result = cursor.fetchone()  #Получаем результат запроса
 
     if result:
         return JsonResponse({
@@ -95,7 +95,7 @@ def login_view(request):
             username = data.get('username')
             password = data.get('password')
 
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password) # Аутентификация пользователя
 
             if user is not None:
                 request.session['username'] = username  # Сохраняем username в Django сессии
