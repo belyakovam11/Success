@@ -22,14 +22,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 500px; /* уменьшено с 600px */
+  height: 500px; 
   width: 360px;
 }
 
 .screen {
-  height: 500px; /* уменьшено с 600px */
+  height: 500px; 
   width: 360px;
-  /* остальные стили остаются */
 }
 
 
