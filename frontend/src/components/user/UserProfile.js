@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 const UserProfile = () => {
-    // Состояние для имени пользователя
     const [username, setUsername] = useState('');
     // Состояние для списка созданных комнат
     const [userRooms, setUserRooms] = useState([]);
@@ -22,7 +21,6 @@ const UserProfile = () => {
         }
 
         try {
-            // Запрос для получения имени пользователя
             const userResponse = await fetch('/get-username/');
             const userData = await userResponse.json();
             setUsername(userData.username);  // Сохраняем имя пользователя в состояние

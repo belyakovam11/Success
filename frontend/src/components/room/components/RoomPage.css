@@ -59,7 +59,6 @@ button:hover {
 
 .option-button.correct {
   background-color: #4caf50;
-  /* Зеленый для правильных ответов */
   border: 2px solid #4caf50;
   color: white;
 }

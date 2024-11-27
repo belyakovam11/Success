@@ -85,7 +85,7 @@ const RoomPage = () => {
       },
       body: JSON.stringify({
         answer,
-        question_text: questions[currentQuestionIndex].text  // Добавлен текст вопроса
+        question_text: questions[currentQuestionIndex].text
       }),
     })
       .then((response) => response.json())
