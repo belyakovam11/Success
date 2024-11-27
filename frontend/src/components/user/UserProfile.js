@@ -21,7 +21,6 @@ const UserProfile = () => {
         }
 
         try {
-            // Запрос для получения имени пользователя
             const userResponse = await fetch('/get-username/');
             const userData = await userResponse.json();
             setUsername(userData.username);  // Сохраняем имя пользователя в состояние
