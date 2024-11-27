@@ -8,7 +8,7 @@ const Login = () => {
     password: '',
   });
   const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // используем хук для навигации
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
