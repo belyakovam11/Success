@@ -207,7 +207,6 @@ option {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #4caf50;
-  /* Зеленый цвет для позитивного действия */
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -219,7 +218,6 @@ option {
 
 .quick-game-button:hover {
   background-color: #388e3c;
-  /* Более темный оттенок зеленого при наведении */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   /* Легкая тень при наведении */
 }

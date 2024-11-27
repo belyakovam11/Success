@@ -1,4 +1,3 @@
-// Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './components/Register.css';
@@ -9,7 +8,7 @@ const Login = () => {
     password: '',
   });
   const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // используем хук для навигации
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

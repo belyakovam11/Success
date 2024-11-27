@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './components/auth/Auth';
 import MainPage from './components/main-page/MainPage';
 import RoomPage from './components/room/RoomPage';
-import UserProfile from './components/user/UserProfile'; // Импортируем компонент профиля
+import UserProfile from './components/user/UserProfile';
 import './components/auth/Auth';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
         <Route path="/" element={<Auth />} />
         <Route path="/main" element={<MainPage />} />
         <Route path="/room/:name" element={<RoomPage />} />
-        <Route path="/profile" element={<UserProfile />} /> {/* Новый маршрут */}
+        <Route path="/profile" element={<UserProfile />} /> {}
       </Routes>
     </Router>
   );
