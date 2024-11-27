@@ -7,27 +7,28 @@ from trivia.models import Question
 from trivia.models import QuizAnswer
 
 class SubmitAnswerView(APIView):
+    # Обработка POST-запросов для отправки ответа на вопрос
     def post(self, request, room_name):
-        user_agent = request.headers.get('User-Agent')
+        user_agent = request.headers.get('User-Agent') # Получаем заголовок User-Agent из запроса
         if not user_agent:
             return Response({"error": "User-Agent header is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        participant = get_object_or_404(
+        participant = get_object_or_404( # Получаем участника комнаты по имени комнаты и User-Agent
             RoomParticipant,
             room__name=room_name,
             user_agent=user_agent
         )
 
-        questions = Question.objects.filter(theme=participant.room.theme).order_by('id')
+        questions = Question.objects.filter(theme=participant.room.theme).order_by('id') # Получаем все вопросы по теме комнаты, сортируем их по идентификатору
         if participant.current_question_index >= len(questions):
             return Response({"error": "No more questions"}, status=status.HTTP_400_BAD_REQUEST)
 
         question_text = request.data.get('question_text')  # Получаем текст вопроса
-        current_question = questions.filter(text=question_text).first()
+        current_question = questions.filter(text=question_text).first() # Находим текущий вопрос по тексту
 
 
-        answer_data = request.data.get('answer')
-        if not answer_data or not question_text:
+        answer_data = request.data.get('answer') # Получаем ответ из данных запроса
+        if not answer_data or not question_text: # Проверяем, что ответ и текст вопроса присутствуют в запросе
             return Response({"error": "Answer and question text are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Логирование отправленного ответа, текста вопроса и правильного ответа
