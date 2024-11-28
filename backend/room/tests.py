@@ -8,10 +8,12 @@ import django
 # Django setup for pytest
 django.setup()
 
+# Фикстура для создания клиента API, который будет использоваться в тестах
 @pytest.fixture
 def api_client():
     return APIClient()
 
+# Фикстура для настройки базы данных перед тестами (выполнение миграций)
 @pytest.fixture(scope='session')
 def setup_db():
     """Настройка базы данных перед запуском тестов."""
@@ -19,6 +21,7 @@ def setup_db():
     yield
     call_command('flush', '--no-input')  # Очищаем базу данных после тестов.
 
+# Фикстура для создания комнаты, которая может быть использована в тестах
 @pytest.fixture
 def create_room(db):
     def _create_room(name, player_count, theme, answer_time):
@@ -31,6 +34,7 @@ def create_room(db):
         return room
     return _create_room
 
+# Тестирование получения списка комнат через API
 @pytest.mark.django_db
 def test_get_rooms(api_client, create_room):
     # Создаем комнаты для теста
@@ -46,6 +50,7 @@ def test_get_rooms(api_client, create_room):
     assert rooms[0]['name'] == 'Test Room 1'
     assert rooms[1]['name'] == 'Test Room 2'
 
+# Тестирование получения списка участников комнаты
 @pytest.mark.django_db
 def test_get_room_participants(api_client, create_room):
     room = create_room('Test Room', 3, 'History', 15)
@@ -61,6 +66,7 @@ def test_get_room_participants(api_client, create_room):
     assert participants[0]['user'] == 'user1'
     assert participants[1]['user'] == 'user2'
 
+# Тестирование функционала присоединения к комнате
 @pytest.mark.django_db
 def test_join_room(api_client, create_room):
     room = create_room('Test Room', 3, 'Music', 20)
@@ -83,6 +89,7 @@ def test_join_room(api_client, create_room):
     assert participant is not None
     assert participant.user_agent == 'Unknown'  # поскольку мы не передавали user-agent
 
+# Тестирование присоединения к комнате, когда она полная
 @pytest.mark.django_db
 def test_join_room_full(api_client, create_room):
     room = create_room('Test Room', 2, 'Math', 15)
@@ -100,6 +107,7 @@ def test_join_room_full(api_client, create_room):
     assert response.status_code == 400
     assert response.json() == {'error': 'Слишком много вопрсов заданно'}
 
+# Тестирование создания новой комнаты
 @pytest.mark.django_db
 def test_create_room(api_client):
     data = {
@@ -120,6 +128,7 @@ def test_create_room(api_client):
     assert response_data['room']['theme'] == 'Technology'
     assert response_data['room']['answerTime'] == 10
 
+# Тестирование ошибки при попытке создать комнату с уже существующим названием
 @pytest.mark.django_db
 def test_create_room_already_exists(api_client, create_room):
     create_room('Existing Room', 5, 'Science', 30)
@@ -137,6 +146,7 @@ def test_create_room_already_exists(api_client, create_room):
     assert response.status_code == 400
     assert response.json() == {'error': 'Комната с таким названием уже существует'}
 
+# Тестирование ошибки при попытке создать комнату с отсутствующими обязательными полями
 @pytest.mark.django_db
 def test_create_room_missing_fields(api_client):
     data = {
