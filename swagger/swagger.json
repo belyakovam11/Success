@@ -690,6 +690,41 @@
                 },
                 "required": ["question_text", "answer"]
             },
+            "QuizAnswer": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор ответа",
+                    "example": 42
+                  },
+                  "participant": {
+                    "$ref": "#/components/schemas/RoomParticipant",
+                    "description": "Ссылка на участника комнаты"
+                  },
+                  "question": {
+                    "$ref": "#/components/schemas/Question",
+                    "description": "Ссылка на вопрос"
+                  },
+                  "answer": {
+                    "type": "string",
+                    "description": "Ответ пользователя",
+                    "example": "Paris"
+                  },
+                  "is_correct": {
+                    "type": "boolean",
+                    "description": "Признак правильности ответа",
+                    "example": true
+                  },
+                  "submitted_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Время отправки ответа",
+                    "example": "2024-11-28T15:45:00Z"
+                  }
+                },
+                "required": ["participant", "question", "answer"]
+              },
             "Room": {
                 "type": "object",
                 "properties": {
@@ -727,7 +762,7 @@
                 },
                 "required": ["name", "player_count", "theme", "answer_time"]
               },
-              
+
               "RoomParticipant": {
                 "type": "object",
                 "properties": {
