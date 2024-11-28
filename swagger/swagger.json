@@ -1077,6 +1077,165 @@
                 }
               }
             }
+          },
+          "/room/{name}/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить информацию о комнате викторины и участниках.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Информация о комнате и участниках.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "users": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "user": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "questions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "text": {
+                                  "type": "string"
+                                },
+                                "options": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "correct_answer": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Комната не найдена."
+                }
+              }
+            }
+          },
+          "/room/{name}/start-quiz": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Запуск викторины.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Викторина успешно началась."
+                },
+                "400": {
+                  "description": "Ошибка при запуске викторины."
+                }
+              }
+            }
+          },
+          "/room/{name}/submit-answer": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Отправка ответа на текущий вопрос.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "answer": {
+                          "type": "string"
+                        },
+                        "question_text": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["answer", "question_text"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Ответ успешно отправлен."
+                },
+                "400": {
+                  "description": "Ошибка при отправке ответа."
+                }
+              }
+            }
+          },
+          "/room/{name}/finish-quiz": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Завершение викторины.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Викторина успешно завершена."
+                },
+                "400": {
+                  "description": "Ошибка при завершении викторины."
+                }
+              }
+            }
           }
     },
     "components": {
