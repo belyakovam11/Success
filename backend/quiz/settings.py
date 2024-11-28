@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Определяем базовую директорию проекта / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -25,10 +25,11 @@ SECRET_KEY = 'django-insecure-k&!01)jnglv(0o1@onm0!f84l76sa-w=zahw)bv4*^)_lnyw^9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Разрешенные хосты для приложения
 ALLOWED_HOSTS = ['45.153.188.79', 'localhost', '127.0.0.1','backend']
 CORS_ALLOW_ALL_ORIGINS = True
 
-# Application definition
+# Определение приложений 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,11 +47,12 @@ INSTALLED_APPS = [
 
 # quiz/settings.py
 
+# Настройка пользовательской модели пользователя
 AUTH_USER_MODEL = 'user.CustomUser'
-
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = False  # Установите True в продакшн-режиме
-SESSION_SAVE_EVERY_REQUEST = True
+# Настройки для работы с cookies сессии
+SESSION_COOKIE_HTTPONLY = True # Запрет доступа к cookies через JavaScript
+SESSION_COOKIE_SECURE = False  # Установите True в продакшн-режиме для безопасности
+SESSION_SAVE_EVERY_REQUEST = True # Сохранять сессию при каждом запросе
 
 
 
@@ -65,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
+# Настройка корневого URL конфигурации
 ROOT_URLCONF = 'quiz.urls'
 
 TEMPLATES = [
@@ -180,6 +182,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'  # Почтовый сервер 
 EMAIL_PORT = 587  # Порт для SMTP
 EMAIL_USE_TLS = True  # Использовать TLS для безопасности
-EMAIL_HOST_USER = 'world_without_border@mail.ru'  # Ваш email
-EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D'  # Ваш пароль для почты
+EMAIL_HOST_USER = 'world_without_border@mail.ru'  # email
+EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D'  # пароль для почты
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Отправитель по умолчанию

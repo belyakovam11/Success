@@ -52,7 +52,7 @@ def get_username(request):
     if not username:
         return JsonResponse({"error": "User is not logged in"}, status=400)
 
-    with connection.cursor() as cursor:
+    with connection.cursor() as cursor:  # Используем курсор для выполнения SQL-запроса
         cursor.execute("""
             SELECT 
                 rp.user,
