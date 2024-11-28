@@ -432,6 +432,80 @@
                     }
                 }
             }
+        },
+        "/trivia/rooms/{room_name}/questions": {
+            "get": {
+                "summary": "Получить вопросы для комнаты",
+                "operationId": "getTriviaRoomQuestions",
+                "tags": ["Trivia Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список вопросов для комнаты",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "text": {
+                                                "type": "string",
+                                                "description": "Текст вопроса",
+                                                "example": "What is the capital of France?"
+                                            },
+                                            "options": {
+                                                "type": "array",
+                                                "description": "Варианты ответов на вопрос",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "example": ["Paris", "Berlin", "Rome", "Madrid"]
+                                            },
+                                            "answer_time": {
+                                                "type": "integer",
+                                                "description": "Время на ответ в секундах",
+                                                "example": 30
+                                            },
+                                            "correct_answer": {
+                                                "type": "string",
+                                                "description": "Правильный ответ на вопрос",
+                                                "example": "Paris"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
