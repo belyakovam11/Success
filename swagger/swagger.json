@@ -621,7 +621,87 @@
                     }
                 }
             }
-        }
+        },
+        "/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Authorization page",
+              "description": "Returns the authorization page for user login or registration.",
+              "responses": {
+                "200": {
+                  "description": "Authorization page displayed successfully."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/main": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Main page",
+              "description": "Displays the main page of the application after successful login.",
+              "responses": {
+                "200": {
+                  "description": "Main page displayed successfully."
+                },
+                "401": {
+                  "description": "User is not authorized."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/room/{name}": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Quiz room page",
+              "description": "Displays the interface for a specific quiz room.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Unique name of the room.",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Room page displayed successfully."
+                },
+                "404": {
+                  "description": "Room not found."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/profile": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "User profile page",
+              "description": "Displays the user profile page with personal information.",
+              "responses": {
+                "200": {
+                  "description": "Profile page displayed successfully."
+                },
+                "401": {
+                  "description": "User is not authorized."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          }
     },
     "components": {
         "schemas": {
