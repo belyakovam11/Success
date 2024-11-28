@@ -644,43 +644,7 @@
                     "password"
                 ]
             },
-            "Room": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer",
-                    "description": "Уникальный идентификатор комнаты",
-                    "example": 1
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Название комнаты",
-                    "example": "Trivia Room"
-                  },
-                  "player_count": {
-                    "type": "integer",
-                    "description": "Максимальное количество игроков",
-                    "example": 10
-                  },
-                  "theme": {
-                    "type": "string",
-                    "description": "Тема комнаты",
-                    "example": "Geography"
-                  },
-                  "answer_time": {
-                    "type": "integer",
-                    "description": "Время ответа на вопросы в секундах",
-                    "example": 30
-                  },
-                  "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Дата и время создания комнаты",
-                    "example": "2024-11-28T12:34:56Z"
-                  }
-                },
-                "required": ["name", "player_count", "theme", "answer_time"]
-              },
+            
             
             "Question": {
                 "type": "object",
@@ -725,7 +689,86 @@
                     }
                 },
                 "required": ["question_text", "answer"]
-            }
+            },
+            "Room": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор комнаты",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Название комнаты",
+                    "example": "Trivia Room"
+                  },
+                  "player_count": {
+                    "type": "integer",
+                    "description": "Максимальное количество игроков",
+                    "example": 10
+                  },
+                  "theme": {
+                    "type": "string",
+                    "description": "Тема комнаты",
+                    "example": "Geography"
+                  },
+                  "answer_time": {
+                    "type": "integer",
+                    "description": "Время ответа на вопросы в секундах",
+                    "example": 30
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Дата и время создания комнаты",
+                    "example": "2024-11-28T12:34:56Z"
+                  }
+                },
+                "required": ["name", "player_count", "theme", "answer_time"]
+              },
+              
+              "RoomParticipant": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор участника",
+                    "example": 10
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "Имя пользователя",
+                    "example": "JohnDoe"
+                  },
+                  "room": {
+                    "$ref": "#/components/schemas/Room",
+                    "description": "Ссылка на комнату, к которой принадлежит участник"
+                  },
+                  "joined_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Дата и время присоединения участника к комнате",
+                    "example": "2024-11-28T15:00:00Z"
+                  },
+                  "user_agent": {
+                    "type": "string",
+                    "description": "Информация о браузере или устройстве пользователя",
+                    "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                  },
+                  "current_question_index": {
+                    "type": "integer",
+                    "description": "Индекс текущего вопроса участника",
+                    "example": 2
+                  },
+                  "correct_answers_count": {
+                    "type": "integer",
+                    "description": "Количество правильных ответов участника",
+                    "example": 3
+                  }
+                },
+                "required": ["user", "room"]
+              }
         }
     }
 }
