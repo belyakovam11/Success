@@ -23,9 +23,8 @@ const Register = () => {
     setIsLoading(true);
     setMessage(''); // Reset previous messages
 
-    // Проверка длины пароля
-    if (formData.password.length < 6) {
-      setMessage('Пароль должен содержать минимум 6 символов');
+    if (formData.password.length < 8) {
+      setMessage('Пароль должен содержать минимум 8 символов');
       setIsLoading(false);
       return;
     }
