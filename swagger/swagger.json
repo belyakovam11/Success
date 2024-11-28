@@ -861,6 +861,104 @@
                 }
               }
             }
+          },
+          "/register_api": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User registration",
+              "description": "Handles user registration by validating the provided data and creating a new user account.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's chosen username"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "User's email address"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password (must be at least 8 characters)"
+                        }
+                      },
+                      "required": ["username", "email", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Registration successful.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string",
+                            "description": "Success message"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Invalid input data.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the validation error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "409": {
+                  "description": "Username or email already exists.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the conflict (e.g., existing username/email)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Server error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "serverError": {
+                            "type": "string",
+                            "description": "Details about the server error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
     },
     "components": {
