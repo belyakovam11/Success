@@ -506,6 +506,121 @@
                     }
                 }
             }
+        },
+        "/trivia/rooms/{room_name}/submit-answer": {
+            "post": {
+                "summary": "Отправить ответ на вопрос",
+                "operationId": "submitAnswer",
+                "tags": ["Trivia Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты, для которой отправляется ответ",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "User-Agent",
+                        "in": "header",
+                        "required": true,
+                        "description": "Заголовок User-Agent для идентификации участника",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question_text": {
+                                        "type": "string",
+                                        "description": "Текст вопроса, на который отправляется ответ",
+                                        "example": "What is the capital of France?"
+                                    },
+                                    "answer": {
+                                        "type": "string",
+                                        "description": "Ответ пользователя на вопрос",
+                                        "example": "Paris"
+                                    }
+                                },
+                                "required": ["question_text", "answer"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ответ успешно принят",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Answer submitted"
+                                        },
+                                        "is_correct": {
+                                            "type": "boolean",
+                                            "description": "Является ли ответ правильным",
+                                            "example": true
+                                        },
+                                        "next_question": {
+                                            "type": "boolean",
+                                            "description": "Есть ли следующий вопрос для пользователя",
+                                            "example": true
+                                        },
+                                        "correct_answers_count": {
+                                            "type": "integer",
+                                            "description": "Количество правильных ответов, данных участником",
+                                            "example": 3
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе (например, отсутствует заголовок или данные запроса)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Answer and question text are required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната или участник не найдены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -529,6 +644,34 @@
                     "password"
                 ]
             }
-        }
+        },
+        "Question": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "Текст вопроса",
+                        "example": "What is the capital of France?"
+                    },
+                    "options": {
+                        "type": "array",
+                        "description": "Варианты ответов на вопрос",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["Paris", "Berlin", "Rome", "Madrid"]
+                    },
+                    "answer_time": {
+                        "type": "integer",
+                        "description": "Время на ответ в секундах",
+                        "example": 30
+                    },
+                    "correct_answer": {
+                        "type": "string",
+                        "description": "Правильный ответ",
+                        "example": "Paris"
+                    }
+                }
+            }
     }
 }
