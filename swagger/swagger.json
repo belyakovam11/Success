@@ -643,9 +643,46 @@
                     "email",
                     "password"
                 ]
-            }
-        },
-        "Question": {
+            },
+            "Room": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор комнаты",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Название комнаты",
+                    "example": "Trivia Room"
+                  },
+                  "player_count": {
+                    "type": "integer",
+                    "description": "Максимальное количество игроков",
+                    "example": 10
+                  },
+                  "theme": {
+                    "type": "string",
+                    "description": "Тема комнаты",
+                    "example": "Geography"
+                  },
+                  "answer_time": {
+                    "type": "integer",
+                    "description": "Время ответа на вопросы в секундах",
+                    "example": 30
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Дата и время создания комнаты",
+                    "example": "2024-11-28T12:34:56Z"
+                  }
+                },
+                "required": ["name", "player_count", "theme", "answer_time"]
+              },
+            
+            "Question": {
                 "type": "object",
                 "properties": {
                     "text": {
@@ -672,6 +709,23 @@
                         "example": "Paris"
                     }
                 }
+            },
+            "SubmitAnswer": {
+                "type": "object",
+                "properties": {
+                    "question_text": {
+                        "type": "string",
+                        "description": "Текст вопроса, на который отправляется ответ",
+                        "example": "What is the capital of France?"
+                    },
+                    "answer": {
+                        "type": "string",
+                        "description": "Ответ пользователя на вопрос",
+                        "example": "Paris"
+                    }
+                },
+                "required": ["question_text", "answer"]
             }
+        }
     }
 }
