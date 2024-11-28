@@ -1,10 +1,9 @@
-/* Auth.css */
 .auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f6f5f7; /* Светлый фон страницы */
+  background-color: #f6f5f7; 
 }
 
 .auth-container {
@@ -12,22 +11,22 @@
   padding: 20px; /* Отступы внутри контейнера */
   border-radius: 10px; /* Закругленные углы */
   box-shadow: 0px 0px 24px #5c5696; /* Тень контейнера */
-  width: 400px; /* Ширина контейнера */
+  width: 400px; 
 }
 
 .toggle-buttons {
   display: flex; /* Горизонтальное расположение кнопок */
   justify-content: center; /* Центрирование кнопок */
-  margin-bottom: 20px; /* Отступ снизу */
+  margin-bottom: 20px; 
 }
 
 .toggle-button {
   flex: 1; /* Занимает доступное пространство */
-  padding: 10px 20px; /* Отступы внутри кнопки */
+  padding: 10px 20px; 
   font-size: 16px; /* Размер шрифта */
-  font-weight: bold; /* Жирный шрифт */
+  font-weight: bold; 
   border: none; /* Без границ */
-  cursor: pointer; /* Курсор при наведении */
+  cursor: pointer; 
   transition: background-color 0.3s ease; /* Плавный переход цвета фона */
   border-radius: 5px; /* Скругление кнопок */
 }

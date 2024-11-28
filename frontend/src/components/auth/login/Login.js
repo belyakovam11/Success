@@ -33,7 +33,7 @@ const Login = () => {
         const data = await response.json();
         console.log(data.message)
         setMessage(data.message || 'Успешный вход!');
-        navigate('/main'); // переход на главную страницу после успешного входа
+        navigate('/main'); 
       } else {
         const errorData = await response.json();
         setMessage(errorData.error || 'Ошибка входа');

@@ -621,7 +621,688 @@
                     }
                 }
             }
-        }
+        },
+        "/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Authorization page",
+              "description": "Returns the authorization page for user login or registration.",
+              "responses": {
+                "200": {
+                  "description": "Authorization page displayed successfully."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/main": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Main page",
+              "description": "Displays the main page of the application after successful login.",
+              "responses": {
+                "200": {
+                  "description": "Main page displayed successfully."
+                },
+                "401": {
+                  "description": "User is not authorized."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/room/{name}": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Quiz room page",
+              "description": "Displays the interface for a specific quiz room.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Unique name of the room.",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Room page displayed successfully."
+                },
+                "404": {
+                  "description": "Room not found."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/profile": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "User profile page",
+              "description": "Displays the user profile page with personal information.",
+              "responses": {
+                "200": {
+                  "description": "Profile page displayed successfully."
+                },
+                "401": {
+                  "description": "User is not authorized."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/auth/login": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User login",
+              "description": "Handles user login by validating credentials and providing a session or token.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's username or email"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password"
+                        }
+                      },
+                      "required": ["username", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Login successful."
+                },
+                "400": {
+                  "description": "Invalid credentials provided."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/auth/register": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User registration",
+              "description": "Handles user registration by creating a new user account.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's desired username"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "User's email address"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password"
+                        }
+                      },
+                      "required": ["username", "email", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "201": {
+                  "description": "Registration successful. User account created."
+                },
+                "400": {
+                  "description": "Invalid input or user already exists."
+                },
+                "500": {
+                  "description": "Server error."
+                }
+              }
+            }
+          },
+          "/login_api": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User login",
+              "description": "Handles user login by validating credentials and providing a session or token.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's username or email"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password"
+                        }
+                      },
+                      "required": ["username", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Login successful.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string",
+                            "description": "Success message"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Invalid credentials provided.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Server error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "serverError": {
+                            "type": "string",
+                            "description": "Details about the server error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/register_api": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User registration",
+              "description": "Handles user registration by validating the provided data and creating a new user account.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's chosen username"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "User's email address"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password (must be at least 8 characters)"
+                        }
+                      },
+                      "required": ["username", "email", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Registration successful.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string",
+                            "description": "Success message"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Invalid input data.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the validation error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "409": {
+                  "description": "Username or email already exists.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the conflict (e.g., existing username/email)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Server error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "serverError": {
+                            "type": "string",
+                            "description": "Details about the server error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/get-username/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить данные пользователя",
+              "responses": {
+                "200": {
+                  "description": "Данные пользователя",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "rating": {
+                            "type": "integer"
+                          },
+                          "favorite_category": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/api/rooms": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить список доступных комнат",
+              "responses": {
+                "200": {
+                  "description": "Список комнат",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "playerCount": {
+                              "type": "integer"
+                            },
+                            "theme": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/api/create-room": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Создать новую комнату",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "playerCount": {
+                          "type": "integer"
+                        },
+                        "theme": {
+                          "type": "string"
+                        },
+                        "answerTime": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "playerCount", "theme"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Комната успешно создана",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "playerCount": {
+                            "type": "integer"
+                          },
+                          "theme": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Ошибка при создании комнаты"
+                }
+              }
+            }
+          },
+          "/room/{name}/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить информацию о комнате викторины и участниках.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Информация о комнате и участниках.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "users": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "user": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "questions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "text": {
+                                  "type": "string"
+                                },
+                                "options": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "correct_answer": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Комната не найдена."
+                }
+              }
+            }
+          },
+          "/room/{name}/start-quiz": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Запуск викторины.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Викторина успешно началась."
+                },
+                "400": {
+                  "description": "Ошибка при запуске викторины."
+                }
+              }
+            }
+          },
+          "/room/{name}/submit-answer": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Отправка ответа на текущий вопрос.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "answer": {
+                          "type": "string"
+                        },
+                        "question_text": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["answer", "question_text"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Ответ успешно отправлен."
+                },
+                "400": {
+                  "description": "Ошибка при отправке ответа."
+                }
+              }
+            }
+          },
+          "/room/{name}/finish-quiz": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Завершение викторины.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "in": "path",
+                  "required": true,
+                  "description": "Имя комнаты для викторины",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Викторина успешно завершена."
+                },
+                "400": {
+                  "description": "Ошибка при завершении викторины."
+                }
+              }
+            }
+          },
+          "/api/user-rooms": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить список комнат, созданных пользователем.",
+              "responses": {
+                "200": {
+                  "description": "Список комнат, созданных пользователем.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "rooms": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "theme": {
+                                  "type": "string"
+                                },
+                                "playerCount": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Ошибка получения списка комнат."
+                }
+              }
+            }
+          },
+          "/get-username-api/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить имя пользователя.",
+              "responses": {
+                "200": {
+                  "description": "Имя пользователя успешно получено.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Ошибка получения имени пользователя."
+                }
+              }
+            }
+          }
     },
     "components": {
         "schemas": {

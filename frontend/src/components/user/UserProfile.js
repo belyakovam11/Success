@@ -32,7 +32,7 @@ const UserProfile = () => {
     // Используем useEffect для вызова fetchUserProfile при монтировании компонента
     useEffect(() => {
         fetchUserProfile();
-    }, []);  // Пустой массив зависимостей для вызова только один раз при монтировании компонента
+    }, []); 
 
     return (
         <div>
