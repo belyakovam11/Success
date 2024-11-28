@@ -227,6 +227,400 @@
                     }
                 }
             }
+        },
+        "/rooms": {
+            "get": {
+                "summary": "Получить список всех комнат",
+                "operationId": "getRooms",
+                "tags": ["Room Management"],
+                "responses": {
+                    "200": {
+                        "description": "Список всех комнат",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {"type": "integer", "description": "Уникальный идентификатор комнаты"},
+                                            "name": {"type": "string", "description": "Название комнаты"},
+                                            "player_count": {"type": "integer", "description": "Максимальное количество игроков"},
+                                            "theme": {"type": "string", "description": "Тема комнаты"},
+                                            "answer_time": {"type": "integer", "description": "Время ответа"},
+                                            "created_at": {"type": "string", "format": "date-time", "description": "Дата создания"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/{room_name}/participants": {
+            "get": {
+                "summary": "Получить список участников комнаты",
+                "operationId": "getRoomParticipants",
+                "tags": ["Room Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты",
+                        "schema": {"type": "string"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список участников комнаты",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {"type": "string", "description": "Имя пользователя"},
+                                            "joined_at": {"type": "string", "format": "date-time", "description": "Дата присоединения"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Комната не найдена",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/join": {
+            "post": {
+                "summary": "Присоединиться к комнате",
+                "operationId": "joinRoom",
+                "tags": ["Room Management"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "roomName": {"type": "string", "description": "Название комнаты"},
+                                    "username": {"type": "string", "description": "Имя пользователя"}
+                                },
+                                "required": ["roomName", "username"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное присоединение",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {"type": "string"},
+                                        "roomId": {"type": "integer"},
+                                        "userId": {"type": "string"}
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Ошибка запроса",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Комната не найдена",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/create": {
+            "post": {
+                "summary": "Создать новую комнату",
+                "operationId": "createRoom",
+                "tags": ["Room Management"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "Название комнаты"},
+                                    "playerCount": {"type": "integer", "description": "Максимальное количество игроков"},
+                                    "theme": {"type": "string", "description": "Тема комнаты"},
+                                    "answerTime": {"type": "integer", "description": "Время ответа"}
+                                },
+                                "required": ["name", "playerCount", "theme", "answerTime"]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Комната успешно создана",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {"type": "string"},
+                                            "room": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {"type": "integer"},
+                                                    "name": {"type": "string"},
+                                                    "playerCount": {"type": "integer"},
+                                                    "theme": {"type": "string"},
+                                                    "answerTime": {"type": "integer"}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Ошибка при создании комнаты",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trivia/rooms/{room_name}/questions": {
+            "get": {
+                "summary": "Получить вопросы для комнаты",
+                "operationId": "getTriviaRoomQuestions",
+                "tags": ["Trivia Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список вопросов для комнаты",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "text": {
+                                                "type": "string",
+                                                "description": "Текст вопроса",
+                                                "example": "What is the capital of France?"
+                                            },
+                                            "options": {
+                                                "type": "array",
+                                                "description": "Варианты ответов на вопрос",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "example": ["Paris", "Berlin", "Rome", "Madrid"]
+                                            },
+                                            "answer_time": {
+                                                "type": "integer",
+                                                "description": "Время на ответ в секундах",
+                                                "example": 30
+                                            },
+                                            "correct_answer": {
+                                                "type": "string",
+                                                "description": "Правильный ответ на вопрос",
+                                                "example": "Paris"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trivia/rooms/{room_name}/submit-answer": {
+            "post": {
+                "summary": "Отправить ответ на вопрос",
+                "operationId": "submitAnswer",
+                "tags": ["Trivia Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты, для которой отправляется ответ",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "User-Agent",
+                        "in": "header",
+                        "required": true,
+                        "description": "Заголовок User-Agent для идентификации участника",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question_text": {
+                                        "type": "string",
+                                        "description": "Текст вопроса, на который отправляется ответ",
+                                        "example": "What is the capital of France?"
+                                    },
+                                    "answer": {
+                                        "type": "string",
+                                        "description": "Ответ пользователя на вопрос",
+                                        "example": "Paris"
+                                    }
+                                },
+                                "required": ["question_text", "answer"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ответ успешно принят",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Answer submitted"
+                                        },
+                                        "is_correct": {
+                                            "type": "boolean",
+                                            "description": "Является ли ответ правильным",
+                                            "example": true
+                                        },
+                                        "next_question": {
+                                            "type": "boolean",
+                                            "description": "Есть ли следующий вопрос для пользователя",
+                                            "example": true
+                                        },
+                                        "correct_answers_count": {
+                                            "type": "integer",
+                                            "description": "Количество правильных ответов, данных участником",
+                                            "example": 3
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе (например, отсутствует заголовок или данные запроса)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Answer and question text are required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната или участник не найдены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -249,7 +643,167 @@
                     "email",
                     "password"
                 ]
-            }
+            },
+            
+            
+            "Question": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "Текст вопроса",
+                        "example": "What is the capital of France?"
+                    },
+                    "options": {
+                        "type": "array",
+                        "description": "Варианты ответов на вопрос",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["Paris", "Berlin", "Rome", "Madrid"]
+                    },
+                    "answer_time": {
+                        "type": "integer",
+                        "description": "Время на ответ в секундах",
+                        "example": 30
+                    },
+                    "correct_answer": {
+                        "type": "string",
+                        "description": "Правильный ответ",
+                        "example": "Paris"
+                    }
+                }
+            },
+            "SubmitAnswer": {
+                "type": "object",
+                "properties": {
+                    "question_text": {
+                        "type": "string",
+                        "description": "Текст вопроса, на который отправляется ответ",
+                        "example": "What is the capital of France?"
+                    },
+                    "answer": {
+                        "type": "string",
+                        "description": "Ответ пользователя на вопрос",
+                        "example": "Paris"
+                    }
+                },
+                "required": ["question_text", "answer"]
+            },
+            "QuizAnswer": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор ответа",
+                    "example": 42
+                  },
+                  "participant": {
+                    "$ref": "#/components/schemas/RoomParticipant",
+                    "description": "Ссылка на участника комнаты"
+                  },
+                  "question": {
+                    "$ref": "#/components/schemas/Question",
+                    "description": "Ссылка на вопрос"
+                  },
+                  "answer": {
+                    "type": "string",
+                    "description": "Ответ пользователя",
+                    "example": "Paris"
+                  },
+                  "is_correct": {
+                    "type": "boolean",
+                    "description": "Признак правильности ответа",
+                    "example": true
+                  },
+                  "submitted_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Время отправки ответа",
+                    "example": "2024-11-28T15:45:00Z"
+                  }
+                },
+                "required": ["participant", "question", "answer"]
+              },
+            "Room": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор комнаты",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Название комнаты",
+                    "example": "Trivia Room"
+                  },
+                  "player_count": {
+                    "type": "integer",
+                    "description": "Максимальное количество игроков",
+                    "example": 10
+                  },
+                  "theme": {
+                    "type": "string",
+                    "description": "Тема комнаты",
+                    "example": "Geography"
+                  },
+                  "answer_time": {
+                    "type": "integer",
+                    "description": "Время ответа на вопросы в секундах",
+                    "example": 30
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Дата и время создания комнаты",
+                    "example": "2024-11-28T12:34:56Z"
+                  }
+                },
+                "required": ["name", "player_count", "theme", "answer_time"]
+              },
+
+              "RoomParticipant": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Уникальный идентификатор участника",
+                    "example": 10
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "Имя пользователя",
+                    "example": "JohnDoe"
+                  },
+                  "room": {
+                    "$ref": "#/components/schemas/Room",
+                    "description": "Ссылка на комнату, к которой принадлежит участник"
+                  },
+                  "joined_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Дата и время присоединения участника к комнате",
+                    "example": "2024-11-28T15:00:00Z"
+                  },
+                  "user_agent": {
+                    "type": "string",
+                    "description": "Информация о браузере или устройстве пользователя",
+                    "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                  },
+                  "current_question_index": {
+                    "type": "integer",
+                    "description": "Индекс текущего вопроса участника",
+                    "example": 2
+                  },
+                  "correct_answers_count": {
+                    "type": "integer",
+                    "description": "Количество правильных ответов участника",
+                    "example": 3
+                  }
+                },
+                "required": ["user", "room"]
+              }
         }
     }
 }
