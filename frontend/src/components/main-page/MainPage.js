@@ -184,7 +184,19 @@ const MainPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setRoomDetails({ ...roomDetails, [name]: value });
+
+    // Проверяем, чтобы количество вопросов было от 1 до 15
+    if (name === 'playerCount') {
+      if (value < 1) {
+        setRoomDetails({ ...roomDetails, playerCount: 1 });
+      } else if (value > 15) {
+        setRoomDetails({ ...roomDetails, playerCount: 15 });
+      } else {
+        setRoomDetails({ ...roomDetails, [name]: value });
+      }
+    } else {
+      setRoomDetails({ ...roomDetails, [name]: value });
+    }
   };
 
 
@@ -250,8 +262,11 @@ const MainPage = () => {
                 placeholder="Количество вопросов"
                 value={roomDetails.playerCount}
                 onChange={handleInputChange}
+                min="1"
+                max="15"
                 required
               />
+
               <select
                 name="theme"
                 value={roomDetails.theme}

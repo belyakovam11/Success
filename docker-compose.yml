@@ -148,6 +148,18 @@ services:
   #     - app-network
 
 
+  swagger-ui:
+    build:
+      context: ./swagger
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./swagger/swagger.json:/swagger.json
+    environment:
+      - SWAGGER_JSON=/swagger.json
+    networks:
+      - app-network
+
 networks:
   app-network:
 
