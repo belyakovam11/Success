@@ -959,6 +959,124 @@
                 }
               }
             }
+          },
+          "/get-username/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить данные пользователя",
+              "responses": {
+                "200": {
+                  "description": "Данные пользователя",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "rating": {
+                            "type": "integer"
+                          },
+                          "favorite_category": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/api/rooms": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить список доступных комнат",
+              "responses": {
+                "200": {
+                  "description": "Список комнат",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "playerCount": {
+                              "type": "integer"
+                            },
+                            "theme": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/api/create-room": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "Создать новую комнату",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "playerCount": {
+                          "type": "integer"
+                        },
+                        "theme": {
+                          "type": "string"
+                        },
+                        "answerTime": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "playerCount", "theme"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Комната успешно создана",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "playerCount": {
+                            "type": "integer"
+                          },
+                          "theme": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Ошибка при создании комнаты"
+                }
+              }
+            }
           }
     },
     "components": {
