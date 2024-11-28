@@ -1236,6 +1236,72 @@
                 }
               }
             }
+          },
+          "/api/user-rooms": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить список комнат, созданных пользователем.",
+              "responses": {
+                "200": {
+                  "description": "Список комнат, созданных пользователем.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "rooms": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "theme": {
+                                  "type": "string"
+                                },
+                                "playerCount": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Ошибка получения списка комнат."
+                }
+              }
+            }
+          },
+          "/get-username-api/": {
+            "get": {
+              "tags": ["frontend"],
+              "summary": "Получить имя пользователя.",
+              "responses": {
+                "200": {
+                  "description": "Имя пользователя успешно получено.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "Ошибка получения имени пользователя."
+                }
+              }
+            }
           }
     },
     "components": {
