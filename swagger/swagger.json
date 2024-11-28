@@ -227,6 +227,211 @@
                     }
                 }
             }
+        },
+        "/rooms": {
+            "get": {
+                "summary": "Получить список всех комнат",
+                "operationId": "getRooms",
+                "tags": ["Room Management"],
+                "responses": {
+                    "200": {
+                        "description": "Список всех комнат",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {"type": "integer", "description": "Уникальный идентификатор комнаты"},
+                                            "name": {"type": "string", "description": "Название комнаты"},
+                                            "player_count": {"type": "integer", "description": "Максимальное количество игроков"},
+                                            "theme": {"type": "string", "description": "Тема комнаты"},
+                                            "answer_time": {"type": "integer", "description": "Время ответа"},
+                                            "created_at": {"type": "string", "format": "date-time", "description": "Дата создания"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/{room_name}/participants": {
+            "get": {
+                "summary": "Получить список участников комнаты",
+                "operationId": "getRoomParticipants",
+                "tags": ["Room Management"],
+                "parameters": [
+                    {
+                        "name": "room_name",
+                        "in": "path",
+                        "required": true,
+                        "description": "Название комнаты",
+                        "schema": {"type": "string"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список участников комнаты",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {"type": "string", "description": "Имя пользователя"},
+                                            "joined_at": {"type": "string", "format": "date-time", "description": "Дата присоединения"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Комната не найдена",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/join": {
+            "post": {
+                "summary": "Присоединиться к комнате",
+                "operationId": "joinRoom",
+                "tags": ["Room Management"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "roomName": {"type": "string", "description": "Название комнаты"},
+                                    "username": {"type": "string", "description": "Имя пользователя"}
+                                },
+                                "required": ["roomName", "username"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное присоединение",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {"type": "string"},
+                                        "roomId": {"type": "integer"},
+                                        "userId": {"type": "string"}
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Ошибка запроса",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Комната не найдена",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rooms/create": {
+            "post": {
+                "summary": "Создать новую комнату",
+                "operationId": "createRoom",
+                "tags": ["Room Management"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "Название комнаты"},
+                                    "playerCount": {"type": "integer", "description": "Максимальное количество игроков"},
+                                    "theme": {"type": "string", "description": "Тема комнаты"},
+                                    "answerTime": {"type": "integer", "description": "Время ответа"}
+                                },
+                                "required": ["name", "playerCount", "theme", "answerTime"]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Комната успешно создана",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {"type": "string"},
+                                            "room": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {"type": "integer"},
+                                                    "name": {"type": "string"},
+                                                    "playerCount": {"type": "integer"},
+                                                    "theme": {"type": "string"},
+                                                    "answerTime": {"type": "integer"}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Ошибка при создании комнаты",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "error": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
