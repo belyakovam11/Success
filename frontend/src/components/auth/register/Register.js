@@ -22,6 +22,14 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     setMessage(''); // Reset previous messages
+
+    // Проверка длины пароля
+    if (formData.password.length < 6) {
+      setMessage('Пароль должен содержать минимум 6 символов');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/register/', {
         method: 'POST',
@@ -45,6 +53,7 @@ const Register = () => {
       setIsLoading(false); // Reset loading state
     }
   };
+
 
   return (
     <div className="auth-form">
@@ -84,8 +93,10 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength="6"  // Ограничиваем длину пароля
           />
         </div>
+
         <button className="button login__submit" type="submit" disabled={isLoading}>
           <span className="button__text">
             {isLoading ? 'Загрузка...' : 'Зарегистрироваться'}
