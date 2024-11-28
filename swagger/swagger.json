@@ -783,6 +783,84 @@
                 }
               }
             }
+          },
+          "/login_api": {
+            "post": {
+              "tags": ["frontend"],
+              "summary": "User login",
+              "description": "Handles user login by validating credentials and providing a session or token.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "User's username or email"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "User's password"
+                        }
+                      },
+                      "required": ["username", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Login successful.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string",
+                            "description": "Success message"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Invalid credentials provided.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "Details about the error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Server error.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "serverError": {
+                            "type": "string",
+                            "description": "Details about the server error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
     },
     "components": {
