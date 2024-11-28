@@ -220,7 +220,7 @@ const MainPage = () => {
             <div
               className="room-card"
               key={index}
-              onClick={() => selectRoom(room)} // При клике на комнату
+              onClick={() => selectRoom(room)}
             >
               {room.name} {/* Отображаем только название комнаты */}
             </div>

@@ -11,7 +11,7 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%; /* Растягиваем контейнер на всю ширину */
+  width: 100%; 
   max-width: 400px;
 }
 
@@ -43,7 +43,7 @@ form button {
   width: 100%; /* Кнопка тоже занимает всю ширину */
 }
 
-/* Дополнительные стили для адаптивности */
+
 @media (max-width: 480px) {
   .auth-container {
     padding: 10px; /* Уменьшаем отступы на маленьких экранах */

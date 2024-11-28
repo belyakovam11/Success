@@ -1,11 +1,11 @@
-// Auth.js
+
 import React, { useState } from 'react';
-import Register from './register/Register'; // Импортируем компонент регистрации
-import Login from './login/Login'; // Исправленный путь
+import Register from './register/Register';
+import Login from './login/Login';
 import './Auth.css';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true); // Стейт для переключения между формами
+  const [isLogin, setIsLogin] = useState(true);
 
   // Функция для переключения между режимами Вход/Регистрация
   const handleToggle = () => {
@@ -27,9 +27,9 @@ const Auth = () => {
 
         {/* Если isLogin === true, показываем компонент Login, иначе — Register */}
         {isLogin ? (
-          <Login /> // Подключаем компонент Login для обработки входа
+          <Login /> 
         ) : (
-          <Register /> // Подключаем компонент Register для регистрации
+          <Register /> 
         )}
       </div>
     </div>

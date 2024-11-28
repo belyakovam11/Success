@@ -9,7 +9,6 @@
   background-position: center;
 }
 
-/* Блок с формой */
 .auth-box {
   background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
@@ -29,9 +28,8 @@
   font-size: 16px;
 }
 
-/* Кнопки */
 .auth-button {
-  background-color: #ff8c00;
+  background-color: #ff8c01;
   color: white;
   padding: 12px 20px;
   font-size: 16px;
