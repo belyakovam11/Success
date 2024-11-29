@@ -17,6 +17,7 @@ def api_client():
 import pytest
 from django.core.management import call_command
 
+
 @pytest.fixture(scope='session')
 def setup_db():
     """Настройка базы данных перед запуском тестов."""
@@ -28,16 +29,19 @@ def setup_db():
     # Очищаем базу данных после тестов
     call_command('flush', '--no-input')  # Очищаем все данные в базе данных
 
-
+# Фикстура для отключения проверки CSRF во время тестов.
 @pytest.fixture(autouse=True)
 def disable_csrf_checks(settings):
     settings.CSRF_COOKIE_NAME = None
     settings.CSRF_HEADER_NAME = None
     settings.CSRF_COOKIE_HTTPONLY = False
 
+
+#Фикстура для создания пользователя в базе данных.
 @pytest.fixture
 def create_user(db):
     def make_user(username="testuser", email="test@example.com", password="password123"):
+        # Создаем пользователя через модель CustomUser
         user = CustomUser.objects.create_user(username=username, email=email, password=password)
         return user
     return make_user
