@@ -53,17 +53,23 @@ def set_up_session(api_client):
     api_client.handler = middleware.process_request(api_client)
     return api_client
 
+
+#Фикстура для имитации задачи отправки email при регистрации.
 @pytest.fixture
 def mock_send_registration_email():
     with patch('user.tasks.send_registration_email.delay') as mock:
         yield mock
 
 
-# Test cases for the views
+# Тесты для представлений (views)
 
 @pytest.mark.django_db
 def test_successful_registration(api_client, mock_send_registration_email):
-    url = reverse('register')
+    """
+    Тест на успешную регистрацию пользователя.
+    Проверяем корректность HTTP статуса, сообщения и вызова отправки email.
+    """
+    url = reverse('register') # Получаем URL для регистрации
     data = {
         "username": "new_user",
         "email": "new_user@example.com",
@@ -72,9 +78,12 @@ def test_successful_registration(api_client, mock_send_registration_email):
     response = api_client.post(url, data, format='json')
     assert response.status_code == 201
     assert response.json().get("message") == "Успешно зарегистрированы!"
+    # Проверяем, был ли вызван метод отправки email
     mock_send_registration_email.assert_called_once_with('new_user@example.com')
 
 
+
+# Тест на ошибку при отсутствии обязательных полей в запросе регистрации.
 @pytest.mark.django_db
 def test_failed_registration_missing_fields(api_client):
     url = reverse('register')  
@@ -87,8 +96,11 @@ def test_failed_registration_missing_fields(api_client):
     assert response.json().get("error") == "Все поля обязательны"
 
 
+
+# Тест на успешный вход в систему.
 @pytest.mark.django_db
 def test_successful_login(api_client, create_user):
+    # Создаем тестового пользователя
     create_user(username="login_user", password="password123")
     url = reverse('login') 
     data = {
@@ -100,6 +112,8 @@ def test_successful_login(api_client, create_user):
     assert response.json().get("message") == "Login successful!"
 
 
+
+# Тест на ошибку при вводе неправильных учетных данных.
 @pytest.mark.django_db
 def test_failed_login(api_client):
     url = reverse('login') 
@@ -112,6 +126,8 @@ def test_failed_login(api_client):
     assert response.json().get("error") == "Неверное имя пользователя или пароль."
 
 
+
+#Тест на сохранение сессии после успешного входа в систему.
 @pytest.mark.django_db
 def test_session_saved_after_login(api_client, create_user):
     create_user(username="session_user", password="session_password")
