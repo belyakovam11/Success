@@ -23,16 +23,20 @@ def rooms(request):
     # Возвращаем JSON ответ
     return JsonResponse(rooms, safe=False)
 
+    
+    # Обрабатывает запрос на получение списка участников комнаты.
+    # Возвращает участников комнаты в формате JSON.
 def get_room_participants(request, room_name):
     try:
         room = Room.objects.get(name=room_name)
         participants = RoomParticipant.objects.filter(room=room).values('user', 'joined_at')
         return JsonResponse(list(participants), safe=False)
-    except Room.DoesNotExist:
+    except Room.DoesNotExist: # Если комната не найдена, возвращаем ошибку 404
         return JsonResponse({'error': 'Room not found'}, status=404)
 
 
 @csrf_exempt
+# Обрабатывает запрос на присоединение пользователя к комнате.
 def join_room(request):
     if request.method == 'POST':
         try:
@@ -45,7 +49,7 @@ def join_room(request):
             if not room:
                 return JsonResponse({'error': 'Комната не найдена'}, status=404)
 
-            # Проверка лимита игроков
+            # Проверяем, не превышено ли максимальное количество игроков
             current_player_count = room.participants.count()
             if current_player_count >= room.player_count:
                 return JsonResponse({'error': 'Слишком много вопрсов заданно'}, status=400)
@@ -66,6 +70,7 @@ def join_room(request):
 
 
 @csrf_exempt
+#Обрабатывает запрос на создание новой комнаты.
 def create_room(request):
     if request.method == 'POST':
         try:
@@ -93,6 +98,7 @@ def create_room(request):
                 answer_time=answer_time
             )
 
+            # Возвращаем успешный ответ с информацией о созданной комнате
             return JsonResponse({
                 'message': 'Комната успешно создана',
                 'room': {
@@ -104,6 +110,7 @@ def create_room(request):
                 }
             })
         except Exception as e:
+            # Логируем и возвращаем ошибку
             print("Ошибка:", str(e))  # Логируем ошибку
             return JsonResponse({'error': str(e)}, status=400)
 

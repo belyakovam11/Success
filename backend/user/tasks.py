@@ -2,6 +2,8 @@ from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 
+
+# Определяем задачу Celery для отправки приветственного письма после регистрации
 @shared_task
 def send_registration_email(user_email):
     subject = "Добро пожаловать в «Викторину»!"
@@ -16,6 +18,6 @@ def send_registration_email(user_email):
     С нетерпением ждем ваших успехов!
     Команда «Викторина Success»
     """
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = [user_email]
-    send_mail(subject, message, email_from, recipient_list)
+    email_from = settings.EMAIL_HOST_USER # Электронная почта отправителя, задается в настройках Django
+    recipient_list = [user_email] # Список получателей письма (в данном случае, только один адрес)
+    send_mail(subject, message, email_from, recipient_list) # Функция отправки письма. Отправляет email с заданной темой, текстом и адресами.

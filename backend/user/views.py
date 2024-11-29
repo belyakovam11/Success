@@ -1,14 +1,13 @@
 from django.http import JsonResponse
 from rest_framework import generics
-from user.models import CustomUser  # Импортируем кастомную модель пользователя
-from user.serializers import UserSerializer  # Импортируем ваш сериализатор
+from user.models import CustomUser
+from user.serializers import UserSerializer  
 from django.views.decorators.csrf import csrf_exempt
 from user.tasks import send_registration_email
 from django.contrib.auth import authenticate
 import json
 import sys
 from django.db import connection
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
