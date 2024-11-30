@@ -14,22 +14,11 @@ from pathlib import Path
 
 # Определяем базовую директорию проекта / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-k&!01)jnglv(0o1@onm0!f84l76sa-w=zahw)bv4*^)_lnyw^9'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-# Разрешенные хосты для приложения
 ALLOWED_HOSTS = ['45.153.188.79', 'localhost', '127.0.0.1','backend']
 CORS_ALLOW_ALL_ORIGINS = True
 
-# Определение приложений 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,11 +34,7 @@ INSTALLED_APPS = [
 ]
 
 
-# quiz/settings.py
-
-# Настройка пользовательской модели пользователя
 AUTH_USER_MODEL = 'user.CustomUser'
-# Настройки для работы с cookies сессии
 SESSION_COOKIE_HTTPONLY = True # Запрет доступа к cookies через JavaScript
 SESSION_COOKIE_SECURE = False  # Установите True в продакшн-режиме для безопасности
 SESSION_SAVE_EVERY_REQUEST = True # Сохранять сессию при каждом запросе
@@ -157,7 +142,7 @@ SESSION_CACHE_ALIAS = "default"
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',  # Подключаемся к Redis-контейнеру
+        'LOCATION': 'redis://redis:6379/1', 
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -174,14 +159,13 @@ CELERY_TIMEZONE = 'UTC'
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
-    # Добавьте другие разрешенные источники при необходимости
 ]
 
 # Настройки для отправки почты
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mail.ru'  # Почтовый сервер 
-EMAIL_PORT = 587  # Порт для SMTP
-EMAIL_USE_TLS = True  # Использовать TLS для безопасности
-EMAIL_HOST_USER = 'world_without_border@mail.ru'  # email
-EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D'  # пароль для почты
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Отправитель по умолчанию
+EMAIL_HOST = 'smtp.mail.ru' 
+EMAIL_PORT = 587 
+EMAIL_USE_TLS = True 
+EMAIL_HOST_USER = 'world_without_border@mail.ru' 
+EMAIL_HOST_PASSWORD = 'AwSKUpgi6FvB89aqPp7D' 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
