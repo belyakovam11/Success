@@ -11,10 +11,10 @@ const RoomPage = () => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
   const [quizEnded, setQuizEnded] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null); // Track selected answer
-  const [answerCorrect, setAnswerCorrect] = useState(null); // Store correctness of the answer
-  const [score, setScore] = useState(0); // Track score
-  const [startTime, setStartTime] = useState(null); // Track start time
+  const [selectedAnswer, setSelectedAnswer] = useState(null); 
+  const [answerCorrect, setAnswerCorrect] = useState(null); 
+  const [score, setScore] = useState(0); 
+  const [startTime, setStartTime] = useState(null); 
   const [endTime, setEndTime] = useState(null); // Track end time
   const [showModal, setShowModal] = useState(false); // To show modal with results
 
@@ -57,7 +57,7 @@ const RoomPage = () => {
 
   const startQuiz = () => {
     setQuizStarted(true);
-    setRemainingTime(10); // Set initial time for first question
+    setRemainingTime(10); 
     setStartTime(new Date()); // Record the start time of the quiz
   };
 
@@ -68,7 +68,7 @@ const RoomPage = () => {
     setAnswerCorrect(correct);
 
     if (correct) {
-      setScore(prevScore => prevScore + 1); // Increase score for correct answers
+      setScore(prevScore => prevScore + 1); 
     }
 
     // Логирование вопроса, выбранного ответа и правильного ответа
@@ -76,7 +76,6 @@ const RoomPage = () => {
     // console.log("Выбранный ответ:", answer);
     // console.log("Правильный ответ:", questions[currentQuestionIndex].correct_answer);
 
-    // Отправка данных на сервер
     fetch(`/api/room/${name}/submit-answer/`, {
       method: 'POST',
       headers: {
