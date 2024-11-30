@@ -7,7 +7,6 @@ import './Auth.css';
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
 
-  // Функция для переключения между режимами Вход/Регистрация
   const handleToggle = () => {
     setIsLogin(!isLogin);
   };
