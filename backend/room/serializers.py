@@ -1,4 +1,3 @@
-# app_quiz/serializers.py
 from rest_framework import serializers
 from app_quiz.models import RoomParticipant
 
