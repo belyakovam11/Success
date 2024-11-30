@@ -29,7 +29,7 @@ form input {
   margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  width: 100%; /* Поля ввода занимают всю ширину контейнера */
+  width: 100%; 
   box-sizing: border-box; /* Учитываем отступы и границы в ширине */
 }
 
@@ -40,12 +40,12 @@ form button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width: 100%; /* Кнопка тоже занимает всю ширину */
+  width: 100%; 
 }
 
 
 @media (max-width: 480px) {
   .auth-container {
-    padding: 10px; /* Уменьшаем отступы на маленьких экранах */
+    padding: 10px; 
   }
 }
