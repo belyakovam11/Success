@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const UserProfile = () => {
     const [username, setUsername] = useState('');
-    // Состояние для списка созданных комнат
     const [userRooms, setUserRooms] = useState([]);
 
-    // Получение данных о пользователе и его созданных комнатах
     const fetchUserProfile = async () => {
         try {
-            // Запрос для получения списка комнат, созданных пользователем
-            const response = await fetch('/api/user-rooms');  // API для получения созданных комнат
+            const response = await fetch('/api/user-rooms');
             const data = await response.json();
 
             // Если данные о комнатах есть, сохраняем их в состояние

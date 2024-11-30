@@ -223,7 +223,5 @@ option {
 
 .quick-game-button:active {
   background-color: #2e7d32;
-  /* Еще более темный оттенок при нажатии */
   box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
-  /* Эффект нажатия */
 }

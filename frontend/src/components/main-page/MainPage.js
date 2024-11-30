@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate для редиректа
+import { useNavigate } from 'react-router-dom';
 import './components/MainPage.css';
 
 const MainPage = () => {
@@ -8,7 +8,7 @@ const MainPage = () => {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [rating, setRating] = useState(null);
-  const [favoriteCategory, setFavoriteCategory] = useState('');  // Для любимой категории
+  const [favoriteCategory, setFavoriteCategory] = useState('');
   const [roomDetails, setRoomDetails] = useState({
     name: '',
     playerCount: '',
@@ -16,11 +16,10 @@ const MainPage = () => {
     answerTime: '10',
   });
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const navigate = useNavigate(); // Для навигации
+  const navigate = useNavigate();
 
   const themes = ['Спорт', 'История'];
 
-  // Определяем функцию fetchUserData вне useEffect
   const fetchUserData = async () => {
     try {
       const response = await fetch('/get-username/');
@@ -40,10 +39,9 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    fetchUserData(); // Вызываем fetchUserData
+    fetchUserData(); 
     fetchAvailableRooms();
 
-    // Обновляем список комнат каждые 0.5 секунд
     const intervalId = setInterval(fetchAvailableRooms, 500);
 
     // Очистка интервала при размонтировании компонента

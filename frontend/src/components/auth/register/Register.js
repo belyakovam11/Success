@@ -41,7 +41,7 @@ const Register = () => {
       if (response.ok) {
         const data = await response.json();
         setMessage(data.message || 'Успешно зарегистрированы!');
-        setFormData({ username: '', email: '', password: '' }); // Clear form after successful submission
+        setFormData({ username: '', email: '', password: '' }); 
       } else {
         const errorData = await response.json();
         setMessage(errorData.error || 'Ошибка регистрации');
