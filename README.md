@@ -1,3 +1,4 @@
+![image](https://github.com/user-attachments/assets/ac9ddeef-654f-4e98-ba7f-a12dbb872a58)
 
 ## Используемые технологии
 
